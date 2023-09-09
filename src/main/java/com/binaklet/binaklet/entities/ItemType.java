@@ -17,6 +17,7 @@ public class ItemType {
     String name;
 
 
+    @JsonIgnore
     @OneToMany(mappedBy = "itemType",fetch = FetchType.LAZY)
     List<Item> items;
 

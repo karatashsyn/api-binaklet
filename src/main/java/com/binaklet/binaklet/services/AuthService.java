@@ -28,7 +28,7 @@ public class AuthService {
     public AuthenticationResponse register(RegisterRequest request) {
         Optional<User> checkedUser = userRepository.findByEmail(request.getEmail());
         if(checkedUser.isPresent()){
-            return null;
+            return AuthenticationResponse.builder().token(null).message("Bu email kullanılmakta.").build();
         }
         else{
 

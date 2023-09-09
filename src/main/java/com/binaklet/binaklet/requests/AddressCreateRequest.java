@@ -8,8 +8,6 @@ import org.springframework.web.bind.annotation.RequestBody;
 @Data
 public class AddressCreateRequest {
 
-    Long userId;
-
     String addressText;
 
 }

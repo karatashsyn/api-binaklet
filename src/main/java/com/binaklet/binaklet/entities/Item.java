@@ -6,6 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -26,7 +27,7 @@ public class Item {
 
 
 
-    Float price;
+    Integer price;
 
     Float mass;
 
@@ -35,7 +36,7 @@ public class Item {
 
     Float age;
 
-      ItemStatus status;
+    ItemStatus status;
 
     @Lob
     @Column(columnDefinition = "text")
@@ -61,17 +62,18 @@ public class Item {
 
     @ManyToOne(fetch = FetchType.EAGER) //DONE
     @JoinColumn(name = "item_type_id")
-    @JsonIgnore
     ItemType itemType;
 
     Float height;
 
     Float width;
 
+
+
     @PrePersist
     protected void onCreate(){
         createdDate=new Date();
-        setStatus(ItemStatus.ITEM_STATUS_AVAILABLE);
+        setStatus(ItemStatus.AVAILABLE);
 
     }
 

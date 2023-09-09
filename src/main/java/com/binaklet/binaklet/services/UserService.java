@@ -14,6 +14,7 @@ import java.util.Optional;
 public class UserService extends BaseService<User,Long>{
 
     public UserService(JpaRepository<User, Long> repository) {
+
         super(repository);
     }
 }

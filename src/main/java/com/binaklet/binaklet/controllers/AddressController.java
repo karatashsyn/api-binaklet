@@ -6,43 +6,34 @@ import com.binaklet.binaklet.repositories.UserRepository;
 import com.binaklet.binaklet.requests.AddressCreateRequest;
 import com.binaklet.binaklet.services.AddressService;
 import com.binaklet.binaklet.services.UserService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/addresses")
+@RequiredArgsConstructor
 public class AddressController {
-    private AddressService addressService;
 
-    private UserService userService;
 
-    public AddressController (AddressService addressService,UserService userService){
-        this.addressService=addressService;
-        this.userService = userService;
-    }
+    private final AddressService addressService;
+    private  final UserService userService;
+    private final UserRepository userRepo;
+
 
     @GetMapping
-    public List<Address> getAddresses(){
+    public List<Address> getAll(){
         return addressService.getAll();
     }
 
     @PostMapping()
-    public Address createAddress(@RequestBody AddressCreateRequest newAddress){
-        System.out.print(newAddress.toString());
-        Long userId = newAddress.getUserId();
-        User user = userService.getById(userId);
-        Address addressToSave = new Address();
-        if(user!=null){
-            addressToSave.setUser(user);
-            addressToSave.setAddressText(newAddress.getAddressText());
-            return addressService.create(addressToSave);
-        }
-        else{
-            return null;
-        }
+    public Address createAddress(@RequestBody AddressCreateRequest request){
 
+        return addressService.create(request);
     }
 
     @GetMapping({"/{addressId}"})
@@ -50,8 +41,4 @@ public class AddressController {
         return addressService.getById(addressId);
     }
 
-    @PostMapping({"/{addressId}"})
-    public Address updateAddress(@PathVariable Long addressId, @RequestBody Address newAddress){
-        return addressService.update(addressId, newAddress);
-    }
 }

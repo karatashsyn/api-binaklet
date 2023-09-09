@@ -2,7 +2,9 @@ package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.services.UserService;
 import com.binaklet.binaklet.entities.User;
+import lombok.RequiredArgsConstructor;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -12,6 +14,7 @@ import java.util.List;
 public class UserController {
 
 
+
     private UserService userService;
 
     public UserController(UserService userService){
@@ -19,14 +22,12 @@ public class UserController {
     }
 
     @GetMapping
-    public List<User> getUsers(){
+    public List<User> getUsers()
+    {
         return userService.getAll();
+
     }
 
-    @PostMapping()
-    public User createUser(@RequestBody User newUser){
-        return userService.create(newUser);
-    }
 
     @GetMapping({"/{userId}"})
     public User getUser(@PathVariable Long userId){

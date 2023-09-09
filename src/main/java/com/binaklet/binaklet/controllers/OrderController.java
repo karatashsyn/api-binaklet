@@ -34,43 +34,44 @@ public class OrderController{
 
     @PostMapping()
     public Order createOrder(@RequestBody OrderCreateRequest request){
-        System.out.println(request.toString());
-        Address pickUpAddress = addressService.getById(request.getPickUpAddressId());
-        Address deliverAddress = addressService.getById(request.getDeliverAddressId());
-        Transporter transporter = transporterService.getById(request.getTransporterId());
-        Long[] itemsId = request.getItemsId();
-        List<Item> orderItems = new ArrayList<>();
-        for (Long id :itemsId
-             ) {
-            Item foundItem = itemService.getById(id);
-            if(foundItem!=null){
-                orderItems.add(foundItem);
-                foundItem.setStatus(ItemStatus.ITEM_STATUS_SOLD);
-            }
-        }
-
-        User buyer = userService.getById(request.getBuyerId());
-        User seller = userService.getById(request.getSellerId());
-
-
-        if(buyer!=null && seller!=null && !orderItems.isEmpty()&&pickUpAddress!=null && deliverAddress!=null){
-            Order orderToCreate = new Order();
-            orderToCreate.setBuyer(buyer);
-            orderToCreate.setSeller(seller);
-            orderToCreate.setItems(orderItems);
-            orderToCreate.setDeliverAddress(deliverAddress);
-            orderToCreate.setPickUpAddress(pickUpAddress);
-            orderToCreate.setStatus(OrderStatus.ORDER_STATUS_CREATED);
-            Transporter transporterOfOrder = transporterService.getById(request.getTransporterId());
-            if(transporterOfOrder!=null){
-                orderToCreate.setTransporter(transporterOfOrder);
-                System.out.println("COUNT: " +transporterService.getActiveOrderCount(transporterOfOrder).toString());
-            }
-            return orderService.create(orderToCreate);
-        }
-        else{
-            return null;
-        }
+        return new Order();
+//        System.out.println(request.toString());
+//        Address pickUpAddress = addressService.getById(request.getPickUpAddressId());
+//        Address deliverAddress = addressService.getById(request.getDeliverAddressId());
+//        Transporter transporter = transporterService.getById(request.getTransporterId());
+//        Long[] itemsId = request.getItemsId();
+//        List<Item> orderItems = new ArrayList<>();
+//        for (Long id :itemsId
+//             ) {
+//            Item foundItem = itemService.getById(id);
+//            if(foundItem!=null){
+//                orderItems.add(foundItem);
+//                foundItem.setStatus(ItemStatus.ITEM_STATUS_SOLD);
+//            }
+//        }
+//
+//        User buyer = userService.getById(request.getBuyerId());
+//        User seller = userService.getById(request.getSellerId());
+//
+//
+//        if(buyer!=null && seller!=null && !orderItems.isEmpty()&&pickUpAddress!=null && deliverAddress!=null){
+//            Order orderToCreate = new Order();
+//            orderToCreate.setBuyer(buyer);
+//            orderToCreate.setSeller(seller);
+//            orderToCreate.setItems(orderItems);
+//            orderToCreate.setDeliverAddress(deliverAddress);
+//            orderToCreate.setPickUpAddress(pickUpAddress);
+//            orderToCreate.setStatus(OrderStatus.ORDER_STATUS_CREATED);
+//            Transporter transporterOfOrder = transporterService.getById(request.getTransporterId());
+//            if(transporterOfOrder!=null){
+//                orderToCreate.setTransporter(transporterOfOrder);
+//                System.out.println("COUNT: " +transporterService.getActiveOrderCount(transporterOfOrder).toString());
+//            }
+//            return orderService.create(orderToCreate);
+//        }
+//        else{
+//            return null;
+//        }
 
 
     }
