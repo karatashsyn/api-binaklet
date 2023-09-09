@@ -21,7 +21,7 @@ public class ItemTypeController {
     }
 
     @PostMapping()
-    public ItemType createItemType(@RequestBody ItemType newItem, @RequestBody String body){
+    public ItemType createItemType(@RequestBody ItemType newItem){
         return itemTypeService.create(newItem);
     }
 

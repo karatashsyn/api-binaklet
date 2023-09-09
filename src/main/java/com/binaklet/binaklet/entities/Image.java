@@ -1,5 +1,6 @@
 package com.binaklet.binaklet.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -9,12 +10,17 @@ import lombok.Data;
 public class Image {
 
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    @ManyToOne() //DONE
+    String fileName;
+
+
+    @ManyToOne(fetch = FetchType.LAZY) //DONE
     @JoinColumn(name="item_id")
+    @JsonIgnore
     Item item;
+
 
     String url;
 }

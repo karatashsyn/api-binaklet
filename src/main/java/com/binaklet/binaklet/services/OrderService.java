@@ -15,7 +15,10 @@ import java.util.Optional;
 @Service
 public class OrderService extends BaseService<Order,Long>{
 
-    public OrderService(JpaRepository<Order, Long> repository) {
+    OrderRepository orderRepository;
+    public OrderService(JpaRepository<Order, Long> repository,OrderRepository orderRepository) {
         super(repository);
+        this.orderRepository = orderRepository;
     }
+
 }

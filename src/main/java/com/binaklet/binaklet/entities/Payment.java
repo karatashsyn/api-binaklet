@@ -3,11 +3,13 @@ package com.binaklet.binaklet.entities;
 
 import com.binaklet.binaklet.enums.PaymentMethod;
 import com.binaklet.binaklet.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.OffsetDateTime;
+import java.util.Date;
 
 @Entity
 @Data
@@ -19,15 +21,25 @@ public class Payment {
 
     Float amount;
 
+    @JsonIgnore
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "user_id")
     User user;
 
+    @JsonIgnore
+    @OneToOne(mappedBy = "payment")
+    Order order;
+
     @Enumerated(EnumType.STRING)
     PaymentStatus status;
 
+    @PrePersist
+    protected void onCreate(){
+        createdDate=new Date();
+    }
+
     @CreatedDate
-    OffsetDateTime createdDate;
+    Date createdDate;
 
     @Enumerated(EnumType.STRING)
     PaymentMethod paymentMethod;

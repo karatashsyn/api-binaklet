@@ -2,7 +2,6 @@ package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.services.UserService;
 import com.binaklet.binaklet.entities.User;
-import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.web.bind.annotation.*;
 
@@ -25,7 +24,7 @@ public class UserController {
     }
 
     @PostMapping()
-    public User createUser(@RequestBody User newUser, HttpServletRequest request,@RequestBody String body){
+    public User createUser(@RequestBody User newUser){
         return userService.create(newUser);
     }
 

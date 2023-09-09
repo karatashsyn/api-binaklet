@@ -1,5 +1,6 @@
 package com.binaklet.binaklet.entities;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
@@ -14,6 +15,7 @@ public class ItemType {
     Long id;
 
     String name;
+
 
     @OneToMany(mappedBy = "itemType",fetch = FetchType.LAZY)
     List<Item> items;

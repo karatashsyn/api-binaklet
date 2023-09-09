@@ -1,11 +1,15 @@
 package com.binaklet.binaklet.entities;
 
 
+import com.binaklet.binaklet.services.UserService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.persistence.*;
+import jakarta.annotation.Nullable;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
+import jakarta.persistence.*;
 import java.time.OffsetDateTime;
 import java.util.List;
 
@@ -14,27 +18,17 @@ import java.util.List;
 @Entity
 @Table(name = "address")
 public class Address {
+
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-    String addressLine1;
+    @NotNull
+    @NotBlank
+    String addressText;
 
-    String addressLine2;
 
-    String country;
-
-    String city;
-
-    String district;
-
-    String postalCode;
-
-    String contactName;
-
-    String contactPhoneNumber;
-
-    @ManyToOne(fetch = FetchType.LAZY)
+    @ManyToOne(fetch = FetchType.EAGER)
     @JoinColumn(name = "user_id")
     @JsonIgnore
     User user;

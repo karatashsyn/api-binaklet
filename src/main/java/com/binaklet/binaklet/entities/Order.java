@@ -3,11 +3,14 @@ package com.binaklet.binaklet.entities;
 
 import com.binaklet.binaklet.enums.OrderStatus;
 import com.binaklet.binaklet.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
 import java.time.OffsetDateTime;
+import java.util.Date;
 import java.util.List;
 
 
@@ -23,8 +26,13 @@ public class Order {
     @Enumerated(EnumType.STRING)
     OrderStatus status;
 
+    @PrePersist
+    protected void onCreate(){
+        createdDate=new Date();
+    }
+
     @CreatedDate
-    OffsetDateTime createdDate;
+    Date createdDate;
 
 
     @OneToOne()
@@ -51,6 +59,11 @@ public class Order {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_user_id")
     User seller;
+
+    @ManyToOne
+    @JsonIgnore
+    @JoinColumn(name = "transporter_id")
+    Transporter transporter;
 
 
 
