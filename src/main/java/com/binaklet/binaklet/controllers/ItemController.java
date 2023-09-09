@@ -6,9 +6,13 @@ import com.binaklet.binaklet.requests.ItemCreateRequest;
 import com.binaklet.binaklet.services.*;
 import com.google.cloud.storage.*;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
+import java.net.http.HttpResponse;
 import java.util.ArrayList;
 import java.util.Base64;
 import java.util.List;
@@ -40,14 +44,14 @@ public class ItemController {
                                @RequestParam(value = "min",required = false) Integer minPrice,
                                @RequestParam(value = "byUser",required = false) Long userId ,
                                @RequestParam(value = "status",required = false) ItemStatus status ,
-                               @RequestParam(value = "type",required = false) ItemType type )
+                               @RequestParam(value = "type",required = false) Long typeId )
     {
-        return itemService.getAll(searchKey,maxPrice,minPrice,userId,status,type);
+        return itemService.getAll(searchKey,maxPrice,minPrice,userId,status,typeId);
 
     }
 
     @PostMapping(consumes = "multipart/form-data")
-    public Item createitem(
+    public ResponseEntity<Item> createitem(
 //            @RequestParam(value = "file",required = false)MultipartFile file,
             @RequestParam("name") String name,
 //            @RequestParam("img") String img,
@@ -57,7 +61,7 @@ public class ItemController {
             @RequestParam(value = "brand",required = false ) String brand,
             @RequestParam("description") String description,
             @RequestParam(value = "tagIds",required = false) Long[] tagIds,
-            @RequestParam("itemTypeId") Long itemTypeId,
+            @RequestParam("typeId") Long typeId,
             @RequestParam("height") Float height,
             @RequestParam("width") Float width
             ) throws IOException {
@@ -65,11 +69,16 @@ public class ItemController {
         imgList.add(imageService.storeImage());
         Item itemToCreate = new Item();
         itemToCreate.setImages(imgList);
-        ItemType itemType = itemTypeService.getById(itemTypeId);
+        ItemType itemType = itemTypeService.getById(typeId);
+        if (itemType != null) {
+            return ResponseEntity.ok().body(itemService.create(name, itemType, description, price, height, width, imgList, mass, brand));
+        }
+        else{
+            return ResponseEntity.badRequest().body(null);
+        }
+    }
 
-        return itemService.create(name,itemType,description,price,height,width,imgList,mass,brand);
-
-//        Item itemToSave = new Item();
+    //        Item itemToSave = new Item();
 //
 //        User user = userService.getById(userId);
 //        ItemType typeOfItem = itemTypeService.getById(itemTypeId);
@@ -119,14 +128,27 @@ public class ItemController {
 //        }
 //
 //
+
+
+    @GetMapping({"/{itemId}"})
+
+    public Item getitem(@PathVariable Long itemId){
+        return itemService.getById(itemId);
+
     }
 
-//    @GetMapping({"/{itemId}"})
-
-//    public Item getitem(@PathVariable Long itemId){
-//        return itemService.getById(itemId);
-
-//    }
+    @DeleteMapping({"/{itemId}"})
+    public ResponseEntity<Item> deleteItem(@PathVariable Long itemId){
+        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+        Item itemToBeDeleted = itemService.getById(itemId);
+        if(itemToBeDeleted==null){
+            return ResponseEntity.badRequest().body(null);
+        }
+        else if(itemToBeDeleted!=null && itemToBeDeleted.getUser().getEmail().equals(currentUserName)){
+            itemService.delete(itemToBeDeleted);
+        }
+        return null;
+    }
 
 //    @PostMapping({"/{itemId}"})
 //    public Item updateitem(@PathVariable Long itemId, @RequestBody Item newItem){

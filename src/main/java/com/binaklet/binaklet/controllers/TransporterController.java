@@ -20,23 +20,23 @@ public class TransporterController {
         this.transporterService=transporterService;
     }
 
-    @GetMapping
-    public List<Transporter> getTransporters(){
-        return transporterService.getAll();
-    }
+//    @GetMapping
+//    public List<Transporter> getTransporters(){
+//        return transporterService.getAll();
+//    }
 
-    @PostMapping()
-    public Transporter createTransporter(@RequestBody Transporter newTransporter){
-        return transporterService.create(newTransporter);
-    }
+//    @PostMapping()
+//    public Transporter createTransporter(@RequestBody Transporter newTransporter){
+//        return transporterService.create(newTransporter);
+//    }
 
-    @GetMapping({"/{transporterId}"})
-    public Transporter getTransporter(@PathVariable Long transporterId){
-        return transporterService.getById(transporterId);
-    }
+//    @GetMapping({"/{transporterId}"})
+//    public Transporter getTransporter(@PathVariable Long transporterId){
+//        return transporterService.getById(transporterId);
+//    }
 
-    @PostMapping({"/{transporterId}"})
-    public Transporter updateTransporter(@PathVariable Long transporterId, @RequestBody Transporter newTransporter){
-        return transporterService.update(transporterId,newTransporter);
-    }
+//    @PostMapping({"/{transporterId}"})
+//    public Transporter updateTransporter(@PathVariable Long transporterId, @RequestBody Transporter newTransporter){
+//        return transporterService.update(transporterId,newTransporter);
+//    }
 }

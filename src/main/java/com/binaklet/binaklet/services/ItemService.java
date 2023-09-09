@@ -25,8 +25,8 @@ public class ItemService{
 //    }
 
 
-    public List<Item> getAll(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus,ItemType type){
-        return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId,itemStatus,type));
+    public List<Item> getAll(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus,Long typeId){
+        return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId,itemStatus,typeId));
     }
 
     public Item create (String name, ItemType itemType, String description, Integer price, Float height, Float width, List<Image> images, Float mass,String brand){
@@ -45,4 +45,11 @@ public class ItemService{
         return itemRepository.save(itemToCreate);
     }
 
+    public Item getById(Long id){
+        return itemRepository.findById(id).orElse(null);
+    }
+
+    public void delete(Item itemToBeDeleted) {
+        itemRepository.delete(itemToBeDeleted);
+    }
 }

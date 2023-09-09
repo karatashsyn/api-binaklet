@@ -3,14 +3,18 @@ package com.binaklet.binaklet.spesifications;
 import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.ItemType;
 import com.binaklet.binaklet.enums.ItemStatus;
+import com.binaklet.binaklet.services.ItemTypeService;
+import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.domain.Specification;
 import org.springframework.stereotype.Component;
 
 import java.util.Optional;
 @Component
+@RequiredArgsConstructor
 public class ItemSpesification {
 
+    private final ItemTypeService itemTypeService;
     public Specification<Item> status(ItemStatus status){
         return (root,query,cb)->
                 cb.equal(root.get("status"),status);
@@ -28,18 +32,25 @@ public class ItemSpesification {
         return (root,query,cb)->
                 cb.greaterThanOrEqualTo(root.get("price"),  min);
     }
+    public Specification<Item> byType(Long typeId){
+        ItemType itemType = itemTypeService.getById(typeId);
+        if(itemType!=null){
+            return (root,query,cb)->
+                    cb.equal(root.get("itemType"),itemType);
+
+        }
+        else{
+            return null;
+        }
+
+    }
 
     public Specification<Item> byUser(Long id){
         return (root, query, cb) ->cb.equal(root.get("id"),id);
     }
 
-    public Specification<Item> byType (ItemType type){
-        return (root, query, cb) -> cb.equal(root.get("itemType"),type);
-    }
 
-
-    public Specification<Item> applyFilters(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus, ItemType itemType){
-        System.out.println("search is "+searchKey);
+    public Specification<Item> applyFilters(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus, Long itemTypeId){
         Specification<Item> spec = null;
         if(searchKey!=null && !searchKey.isBlank()){
             spec=nameLike(searchKey);
@@ -59,8 +70,8 @@ public class ItemSpesification {
         if(itemStatus!=null){
             spec = spec.and(status(itemStatus));
         }
-        if(itemType!=null){
-
+        if(itemTypeId!=null){
+            spec=spec.and(byType(itemTypeId));
         }
 
         return spec;

@@ -7,9 +7,7 @@ public class OrderCreateRequest {
     Long pickUpAddressId;
     Long deliverAddressId;
 
-    Long[]itemsId;
-
-    Long buyerId;
+    Long[]itemIds;
 
     Long sellerId;
 
