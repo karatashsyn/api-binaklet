@@ -2,6 +2,7 @@ package com.binaklet.binaklet.entities;
 
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
@@ -11,6 +12,7 @@ import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.checkerframework.common.aliasing.qual.Unique;
 import org.springframework.data.annotation.CreatedDate;
 import jakarta.validation.*;
 import org.springframework.security.core.GrantedAuthority;
@@ -44,6 +46,7 @@ public class User implements UserDetails {
 
     @Email
     @NotNull
+    @Unique
     String email;
 
 
@@ -101,4 +104,6 @@ public class User implements UserDetails {
     public boolean isEnabled() {
         return true;
     }
+
+
 }

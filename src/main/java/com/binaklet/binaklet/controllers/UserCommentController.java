@@ -2,9 +2,12 @@ package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.User;
+import com.binaklet.binaklet.entities.UserComment;
 import com.binaklet.binaklet.repositories.UserRepository;
 import com.binaklet.binaklet.requests.AddressCreateRequest;
+import com.binaklet.binaklet.requests.UserCommentCreateRequest;
 import com.binaklet.binaklet.services.AddressService;
+import com.binaklet.binaklet.services.UserCommentService;
 import com.binaklet.binaklet.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,29 +18,25 @@ import java.util.List;
 import java.util.Optional;
 
 @RestController
-@RequestMapping("/api/addresses")
+@RequestMapping("/api/comments")
 @RequiredArgsConstructor
-public class AddressController {
+public class UserCommentController {
 
 
-    private final AddressService addressService;
+    private final UserCommentService userCommentService;
     private  final UserService userService;
     private final UserRepository userRepo;
 
 
     @GetMapping
-    public List<Address> getAll(){
-        return addressService.getAll();
+    public List<UserComment> getAll(){
+        return userCommentService.getAll();
     }
 
-    @PostMapping()
-    public Address createAddress(@RequestBody AddressCreateRequest request){
-        return addressService.create(request);
+    @PostMapping
+    public UserComment create(@RequestBody UserCommentCreateRequest req){
+        return userCommentService.create(req);
     }
 
-    @GetMapping({"/{addressId}"})
-    public Address getAddress(@PathVariable Long addressId){
-        return addressService.getById(addressId);
-    }
 
 }

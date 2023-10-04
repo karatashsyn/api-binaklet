@@ -27,11 +27,12 @@ public class AuthService {
 
     public AuthenticationResponse register(RegisterRequest request) {
         Optional<User> checkedUser = userRepository.findByEmail(request.getEmail());
-        if(checkedUser.isPresent()){
+        if( checkedUser.isPresent() ){
+            System.out.println("already in use" + checkedUser.toString());
             return AuthenticationResponse.builder().token(null).message("Bu email kullanılmakta.").build();
         }
         else{
-
+            System.out.println("Registering new user. ");
             var user = User.builder()
                     .firstName(request.getFirstName())
                     .lastName(request.getLastName())

@@ -22,7 +22,7 @@ public class AuthController {
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
         AuthenticationResponse response = authService.register(request);
         if(response.getToken()!=null){
-            return ResponseEntity.ok(authService.register(request));
+            return ResponseEntity.ok(response);
         }
         else{
             return ResponseEntity.status(403).body(response);
@@ -31,6 +31,12 @@ public class AuthController {
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request){
-        return ResponseEntity.ok(authService.login(request));
+        AuthenticationResponse response = authService.login(request);
+        if(response.getToken()!=null && !response.getToken().isBlank()){
+            return ResponseEntity.ok(authService.login(request));
+        }
+        else{
+            return ResponseEntity.status(403).body(null);
+        }
     }
 }

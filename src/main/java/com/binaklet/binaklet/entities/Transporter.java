@@ -23,8 +23,12 @@ public class Transporter {
 
     @NotNull
     String firstName;
-
     String lastName;
+
+    @OneToMany(mappedBy = "transporter")
+    List<UserComment> comments;
+
+    Float capacity;
 
     @Email
     @NotNull
@@ -38,5 +42,6 @@ public class Transporter {
 
     @OneToMany(mappedBy = "transporter",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
     List<Order> orders;
+
 
 }

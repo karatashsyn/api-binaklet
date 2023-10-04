@@ -7,6 +7,7 @@ import com.binaklet.binaklet.services.*;
 import com.google.cloud.storage.*;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
@@ -50,84 +51,31 @@ public class ItemController {
 
     }
 
-    @PostMapping(consumes = "multipart/form-data")
+    @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Item> createitem(
-//            @RequestParam(value = "file",required = false)MultipartFile file,
+            @RequestParam(value = "images",required = false)MultipartFile[] images,
             @RequestParam("name") String name,
-//            @RequestParam("img") String img,
-            @RequestParam(value = "age",required = false) Float age,
+            @RequestParam(value = "age", required = false) Float age,
             @RequestParam("mass") Float mass,
             @RequestParam("price") Integer price,
-            @RequestParam(value = "brand",required = false ) String brand,
+            @RequestParam(value = "brand", required = false ) String brand,
             @RequestParam("description") String description,
-            @RequestParam(value = "tagIds",required = false) Long[] tagIds,
+            @RequestParam(value = "tagIds", required = false) Long[] tagIds,
             @RequestParam("typeId") Long typeId,
             @RequestParam("height") Float height,
             @RequestParam("width") Float width
-            ) throws IOException {
+            ) throws IOException,Exception {
         List<Image> imgList = new ArrayList<>();
-        imgList.add(imageService.storeImage());
         Item itemToCreate = new Item();
         itemToCreate.setImages(imgList);
         ItemType itemType = itemTypeService.getById(typeId);
         if (itemType != null) {
-            return ResponseEntity.ok().body(itemService.create(name, itemType, description, price, height, width, imgList, mass, brand));
+            return ResponseEntity.ok().body(itemService.create(name, itemType, description, price, height, width, images, mass, brand));
         }
         else{
             return ResponseEntity.badRequest().body(null);
         }
     }
-
-    //        Item itemToSave = new Item();
-//
-//        User user = userService.getById(userId);
-//        ItemType typeOfItem = itemTypeService.getById(itemTypeId);
-//
-//        ///////////////
-//        Storage storage = StorageOptions.getDefaultInstance().getService();
-//
-//        String bucketName = "binaklet-item-pics"; // Replace with your GCS bucket name
-//        String fileName = file.getOriginalFilename(); // Use the original filename or generate a unique one
-//
-//        Bucket.BlobTargetOption option = null;
-//        // Upload the file to Google Cloud Storage
-//        BlobInfo blobInfo = BlobInfo.newBuilder(bucketName, fileName).build();
-//        Blob blob = storage.create(blobInfo, file.getBytes());
-//
-//        // Get the URL of the uploaded image
-//        String imageUrl = blob.getMediaLink();
-//
-//        System.out.println("Image uploaded successfully. URL: " + imageUrl);
-//        ///////////////////
-//
-//
-//        if(user!=null && typeOfItem!=null){
-//
-//
-//            itemToSave.setUser(user);
-//            itemToSave.setPrice(price);
-//            itemToSave.setItemType(typeOfItem);
-//            itemToSave.setMass(mass);
-//            itemToSave.setHeight(height);
-//            itemToSave.setWidth(width);
-//            itemToSave.setName(name);
-//            itemToSave.setMass(mass);
-//            itemToSave.setAge(age);
-//            itemToSave.setDescription(description);
-//            Item createdItem =  itemService.create(itemToSave);
-//            Image newImage = new Image();
-//            newImage.setUrl(img);
-//            newImage.setFileName("Image_test");
-//            newImage.setItem(createdItem);
-//            Image createdImage = imageService.create(newImage);
-//            return createdItem;
-//        }
-//
-//        else{
-//            return null;
-//        }
-//
-//
 
 
     @GetMapping({"/{itemId}"})
@@ -137,18 +85,22 @@ public class ItemController {
 
     }
 
-    @DeleteMapping({"/{itemId}"})
-    public ResponseEntity<Item> deleteItem(@PathVariable Long itemId){
-        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
-        Item itemToBeDeleted = itemService.getById(itemId);
-        if(itemToBeDeleted==null){
-            return ResponseEntity.badRequest().body(null);
-        }
-        else if(itemToBeDeleted!=null && itemToBeDeleted.getUser().getEmail().equals(currentUserName)){
-            itemService.delete(itemToBeDeleted);
-        }
-        return null;
-    }
+//    @DeleteMapping({"/{itemId}"})
+//    public ResponseEntity<Item> deleteItem(@PathVariable Long itemId){
+//        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
+//        Item itemToBeDeleted = itemService.getById(itemId);
+//        if(itemToBeDeleted==null){
+//            return ResponseEntity.badRequest().body(null);
+//        }
+//
+//        else if(!itemToBeDeleted.getUser().getEmail().equals(currentUserName)){
+//            return ResponseEntity.status(403).body(null);
+//        }
+//        else if(itemToBeDeleted!=null && itemToBeDeleted.getUser().getEmail().equals(currentUserName)){
+//            itemService.delete(itemToBeDeleted);
+//        }
+//        return null;
+//    }
 
 //    @PostMapping({"/{itemId}"})
 //    public Item updateitem(@PathVariable Long itemId, @RequestBody Item newItem){

@@ -4,21 +4,20 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
 
-@Data
-@Table(name = "image")
 @Entity
-public class Image {
-
+@Table(name = "userComment")
+@Data
+public class UserComment {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
+    String comment;
 
-    @ManyToOne(fetch = FetchType.LAZY) //DONE
-    @JoinColumn(name="item_id")
+    @ManyToOne()
+    User user;
+
     @JsonIgnore
-    Item item;
-
-
-    String url;
+    @ManyToOne()
+    Transporter transporter;
 }

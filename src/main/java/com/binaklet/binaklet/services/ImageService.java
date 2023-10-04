@@ -15,14 +15,4 @@ public class ImageService extends BaseService<Image,Long>{
     public ImageService(JpaRepository<Image, Long> repository) {
         super(repository);
     }
-    public Image storeImage (
-//            String fileName, byte[] imageBytes
-    ){
-        Image tempImg = new Image();
-        tempImg.setUrl("https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRfz6zgzbGiNXaRHVj9TlGFsWYVxdWYvvyFvQ&usqp=CAU");
-        tempImg.setFileName("testFile");
-        return tempImg;
-
-
-    }
 }

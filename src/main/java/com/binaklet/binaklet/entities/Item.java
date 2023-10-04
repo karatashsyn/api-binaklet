@@ -45,6 +45,7 @@ public class Item {
     @OneToMany(mappedBy = "item",fetch = FetchType.EAGER) //DONE
     List<Image> images;
 
+
     @ManyToOne()
     @JoinColumn(name = "order_id")
     Order order;
