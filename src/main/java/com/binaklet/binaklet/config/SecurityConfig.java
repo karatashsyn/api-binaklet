@@ -1,6 +1,7 @@
 package com.binaklet.binaklet.config;
 
 
+import com.binaklet.binaklet.enums.UserRole;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -22,25 +23,32 @@ public class SecurityConfig {
     private final AuthenticationProvider authenticationProvider;
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
-
         http
                 .csrf()
                 .disable()
-                .authorizeHttpRequests()
-                .requestMatchers(HttpMethod.GET,"/api/items/**","/api/users/**", "/api/transporters/")
-                .permitAll()
-                .requestMatchers(HttpMethod.POST,"/api/auth/**")
-                .permitAll()
-                .anyRequest()
-                .authenticated()
-                .and()
-                .sessionManagement()
-                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-                .and()
-                .authenticationProvider(authenticationProvider)
-                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);
+                .authorizeHttpRequests((auth)->{
+                    try {
+                                auth
+                                        .requestMatchers(HttpMethod.GET,"/api/items/**","/api/users/**", "/api/transporters/").permitAll()
+                               .requestMatchers("/api/admin/**").hasRole("ADMIN")
+                                .requestMatchers(HttpMethod.POST,"/api/auth/**").permitAll()
+                                .anyRequest()
+                                .authenticated()
+                                .and()
+                                .sessionManagement()
+                                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                                .and()
+                                .authenticationProvider(authenticationProvider)
+                                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);
+                    }
+                    catch (Exception e){
+                        throw new RuntimeException();
+                    }
+                }).httpBasic();
+
 
         return http.build();
+
 
 
     }

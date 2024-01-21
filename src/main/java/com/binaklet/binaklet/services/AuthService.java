@@ -15,6 +15,7 @@ import org.springframework.security.core.AuthenticationException;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import java.util.Optional;
+import java.util.Set;
 
 @Service
 @RequiredArgsConstructor
@@ -38,8 +39,7 @@ public class AuthService {
                     .firstName(request.getFirstName())
                     .lastName(request.getLastName())
                     .email(request.getEmail())
-                    .password(passwordEncoder.encode(request.getPassword()))
-                    .role(UserRole.USER)
+                    .password(passwordEncoder.encode(request.getPassword())).roles(Set.of(UserRole.ROLE_USER))
                     .phoneNumber(request.getPhoneNumber())
                     .build();
             User createdUser = userService.createUserWithEmptyCard(user);

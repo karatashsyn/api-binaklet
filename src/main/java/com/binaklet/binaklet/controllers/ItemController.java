@@ -39,6 +39,21 @@ public class ItemController {
 
     }
 
+
+    //TODO: itemsin hepsine izin verme, getMyItemsi falan sil
+    @GetMapping("/me")
+//    public List<Item> getMyItems(@RequestParam(value = "searchKey",required = false) String searchKey,
+//                               @RequestParam(value = "max",required = false) Integer maxPrice,
+//                               @RequestParam(value = "min",required = false) Integer minPrice,
+//                               @RequestParam(value = "byUser",required = false) Long userId ,
+//                               @RequestParam(value = "status",required = false) ItemStatus status ,
+//                               @RequestParam(value = "type",required = false) Long typeId )
+//    {
+//        logger.info("GET ALL ITEMS");
+//        return itemService.getMyItems(searchKey,maxPrice,minPrice,userId,status,typeId);
+//
+//    }
+
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Item> createItem(
             @RequestParam(value = "images",required = false)MultipartFile[] images,
