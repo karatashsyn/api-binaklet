@@ -6,11 +6,6 @@ import lombok.Data;
 public class OrderCreateRequest {
     Long pickUpAddressId;
     Long deliverAddressId;
-
     Long[]itemIds;
-
     Long sellerId;
-
-    Long transporterId;
-
 }

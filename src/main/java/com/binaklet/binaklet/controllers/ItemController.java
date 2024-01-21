@@ -2,43 +2,30 @@ package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.ItemStatus;
-import com.binaklet.binaklet.requests.ItemCreateRequest;
+import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.services.*;
-import com.google.cloud.storage.*;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.http.HttpStatus;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.log4j.Log4j;
+import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
-import java.net.http.HttpResponse;
-import java.util.ArrayList;
-import java.util.Base64;
 import java.util.List;
-
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.Optional;
 
 @RestController
+@RequiredArgsConstructor
 @RequestMapping("/api/items")
+@Log4j2
 public class ItemController {
-    private ItemService itemService;
-    ImageService imageService;
-    UserService userService;
-    ItemTypeService itemTypeService;
-    TagService tagService;
-
-    public ItemController (ItemService itemService, ImageService imageService, UserService userService, ItemTypeService itemTypeService, TagService tagService){
-        this.itemService=itemService;
-        this.imageService=imageService;
-        this.userService=userService;
-        this.itemTypeService=itemTypeService;
-        this.tagService=tagService;
-    }
-
+    private final ItemService itemService;
+    private final ItemTypeService itemTypeService;
+    private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
     @GetMapping
     public List<Item> getItems(@RequestParam(value = "searchKey",required = false) String searchKey,
                                @RequestParam(value = "max",required = false) Integer maxPrice,
@@ -47,12 +34,13 @@ public class ItemController {
                                @RequestParam(value = "status",required = false) ItemStatus status ,
                                @RequestParam(value = "type",required = false) Long typeId )
     {
-        return itemService.getAll(searchKey,maxPrice,minPrice,userId,status,typeId);
+        logger.info("GET ALL ITEMS");
+        return itemService.getAllItemsExceptMine(searchKey,maxPrice,minPrice,userId,status,typeId);
 
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Item> createitem(
+    public ResponseEntity<Item> createItem(
             @RequestParam(value = "images",required = false)MultipartFile[] images,
             @RequestParam("name") String name,
             @RequestParam(value = "age", required = false) Float age,
@@ -63,14 +51,18 @@ public class ItemController {
             @RequestParam(value = "tagIds", required = false) Long[] tagIds,
             @RequestParam("typeId") Long typeId,
             @RequestParam("height") Float height,
-            @RequestParam("width") Float width
+            @RequestParam("width") Float width,
+            @RequestParam("depth") Float depth
             ) throws IOException,Exception {
-        List<Image> imgList = new ArrayList<>();
+        logger.info("CREATE ITEM");
+        logger.info("CREATE ITEM/ NAME: " + name);
+        logger.info("CREATE ITEM / IMAGES: " + images);
+        MultipartFile[] fakeImgList = new MultipartFile[0];
+        //TODO: fakeImgList yerine images parami gelicek
         Item itemToCreate = new Item();
-        itemToCreate.setImages(imgList);
         ItemType itemType = itemTypeService.getById(typeId);
         if (itemType != null) {
-            return ResponseEntity.ok().body(itemService.create(name, itemType, description, price, height, width, images, mass, brand));
+            return ResponseEntity.ok().body(itemService.create(name, itemType, description, price, height, width,depth, images ,mass, brand));
         }
         else{
             return ResponseEntity.badRequest().body(null);
@@ -80,9 +72,17 @@ public class ItemController {
 
     @GetMapping({"/{itemId}"})
 
-    public Item getitem(@PathVariable Long itemId){
-        return itemService.getById(itemId);
-
+    public Item getitem(@PathVariable String itemId){
+        try {
+            Long id = Long.parseLong(itemId.trim());
+            return itemService.getById(id);
+        }
+        catch(NumberFormatException  e) {
+            throw new ApiRequestException("Lütfen geçerli bir ürün kimliği giriniz");
+        }
+        catch (Exception e){
+            throw e;
+        }
     }
 
 //    @DeleteMapping({"/{itemId}"})

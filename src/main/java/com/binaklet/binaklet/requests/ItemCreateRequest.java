@@ -31,6 +31,8 @@ public class ItemCreateRequest {
 
         Float width;
 
+        Float depth;
+
 
 
 

@@ -1,6 +1,7 @@
 package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.entities.Transporter;
+import com.binaklet.binaklet.requests.TransporterCreateRequest;
 import com.binaklet.binaklet.services.TransporterService;
 import com.binaklet.binaklet.services.UserService;
 import com.binaklet.binaklet.entities.User;
@@ -25,10 +26,16 @@ public class TransporterController {
 //        return transporterService.getAll();
 //    }
 
-//    @PostMapping()
-//    public Transporter createTransporter(@RequestBody Transporter newTransporter){
-//        return transporterService.create(newTransporter);
-//    }
+    @PostMapping()
+    public Transporter createTransporter(@RequestBody TransporterCreateRequest newTransporter){
+        System.out.println("Create Denendi");
+        return transporterService.create(newTransporter);
+    }
+    @GetMapping()
+    public List<Transporter> getAllTransporters(){
+        System.out.println("Get Denendi");
+        return transporterService.getAll();
+    }
 
 //    @GetMapping({"/{transporterId}"})
 //    public Transporter getTransporter(@PathVariable Long transporterId){

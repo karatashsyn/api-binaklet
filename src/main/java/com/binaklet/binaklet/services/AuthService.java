@@ -23,6 +23,7 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
+    private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
     public AuthenticationResponse register(RegisterRequest request) {
@@ -41,7 +42,7 @@ public class AuthService {
                     .role(UserRole.USER)
                     .phoneNumber(request.getPhoneNumber())
                     .build();
-            userRepository.save(user);
+            User createdUser = userService.createUserWithEmptyCard(user);
             var token = jwtService.generateToken(user);
             return AuthenticationResponse.builder()
                     .token(token)

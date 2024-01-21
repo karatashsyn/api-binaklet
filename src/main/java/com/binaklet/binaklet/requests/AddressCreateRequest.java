@@ -7,7 +7,5 @@ import org.springframework.web.bind.annotation.RequestBody;
 
 @Data
 public class AddressCreateRequest {
-
     String addressText;
-
 }

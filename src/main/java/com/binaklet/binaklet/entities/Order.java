@@ -3,6 +3,7 @@ package com.binaklet.binaklet.entities;
 
 import com.binaklet.binaklet.enums.OrderStatus;
 import com.binaklet.binaklet.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
@@ -31,6 +32,7 @@ public class Order {
         createdDate=new Date();
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     @CreatedDate
     Date createdDate;
 
@@ -64,7 +66,5 @@ public class Order {
     @JsonIgnore
     @JoinColumn(name = "transporter_id")
     Transporter transporter;
-
-
 
 }

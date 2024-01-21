@@ -25,22 +25,20 @@ public class SecurityConfig {
 
         http
                 .csrf()
-                .disable();
-//                .authorizeHttpRequests()
-//                .requestMatchers(HttpMethod.POST,"/api/items/**")
-//                .permitAll()
-//                .requestMatchers(HttpMethod.GET,"/api/items/**","/api/users/**")
-//                .permitAll()
-//                .requestMatchers(HttpMethod.POST,"/api/auth/**")
-//                .permitAll()
-//                .anyRequest()
-//                .authenticated()
-//                .and()
-//                .sessionManagement()
-//                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
-//                .and()
-//                .authenticationProvider(authenticationProvider)
-//                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);
+                .disable()
+                .authorizeHttpRequests()
+                .requestMatchers(HttpMethod.GET,"/api/items/**","/api/users/**", "/api/transporters/")
+                .permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/auth/**")
+                .permitAll()
+                .anyRequest()
+                .authenticated()
+                .and()
+                .sessionManagement()
+                .sessionCreationPolicy(SessionCreationPolicy.STATELESS)
+                .and()
+                .authenticationProvider(authenticationProvider)
+                .addFilterBefore(jwtAuthFilter,UsernamePasswordAuthenticationFilter.class);
 
         return http.build();
 

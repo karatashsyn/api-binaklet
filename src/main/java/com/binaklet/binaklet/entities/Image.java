@@ -13,12 +13,10 @@ public class Image {
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     Long id;
 
-
     @ManyToOne(fetch = FetchType.LAZY) //DONE
     @JoinColumn(name="item_id")
     @JsonIgnore
     Item item;
-
 
     String url;
 }

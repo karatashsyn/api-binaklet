@@ -3,6 +3,7 @@ package com.binaklet.binaklet.entities;
 
 import com.binaklet.binaklet.enums.PaymentMethod;
 import com.binaklet.binaklet.enums.PaymentStatus;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import lombok.Data;
@@ -38,6 +39,7 @@ public class Payment {
         createdDate=new Date();
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     @CreatedDate
     Date createdDate;
 

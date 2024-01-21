@@ -25,9 +25,15 @@ public class AddressController {
     private final UserRepository userRepo;
 
 
+    //TODO: For admins
+//    @GetMapping
+//    public List<Address> getAll(){
+//        return addressService.getAll();
+//    }
+
     @GetMapping
-    public List<Address> getAll(){
-        return addressService.getAll();
+    public List<Address> getMyAddresses(){
+        return addressService.getCurrentUserAddresses();
     }
 
     @PostMapping()

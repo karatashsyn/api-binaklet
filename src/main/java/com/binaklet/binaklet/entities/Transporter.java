@@ -28,7 +28,9 @@ public class Transporter {
     @OneToMany(mappedBy = "transporter")
     List<UserComment> comments;
 
-    Float capacity;
+    Float volumeCapacity;
+    Float massCapacity;
+    Float occupiedCapacity; //For volume
 
     @Email
     @NotNull
@@ -37,8 +39,11 @@ public class Transporter {
     @NotNull
     String phoneNumber;
 
-    @OneToOne
-    Address address;
+    @NotNull
+    String addressText;
+
+    @NotNull
+    String brandName;
 
     @OneToMany(mappedBy = "transporter",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
     List<Order> orders;

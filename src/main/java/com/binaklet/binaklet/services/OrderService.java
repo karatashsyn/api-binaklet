@@ -3,6 +3,7 @@ package com.binaklet.binaklet.services;
 import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.enums.OrderStatus;
+import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.OrderRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
 import com.binaklet.binaklet.requests.OrderCreateRequest;
@@ -28,8 +29,11 @@ public class OrderService{
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
 
+
+
     public Order create (OrderCreateRequest request){
-        System.out.println(request.toString());
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili Kullanıcı Bulunamadı");}
         Address pickUpAddress = addressService.getById(request.getPickUpAddressId());
         Address deliverAddress = addressService.getById(request.getDeliverAddressId());
 
@@ -38,36 +42,32 @@ public class OrderService{
         for (Long id :itemsId
         ) {
             Item foundItem = itemService.getById(id);
-            if(foundItem!=null){
-                orderItems.add(foundItem);
-                foundItem.setStatus(ItemStatus.SOLD);
+
+            if(foundItem.getId()==null){
+                throw new ApiRequestException("Eklemek istenilen ürün sistemde bulunmamaktadır");
             }
+            if( foundItem.getStatus()==ItemStatus.SOLD || foundItem.getStatus()==ItemStatus.INACTIVE){
+                throw new ApiRequestException("Eklemek istenilen ürün satın alınmış veya inaktif.");
+            }
+            orderItems.add(foundItem);
         }
-
-
         User seller = userService.getById(request.getSellerId());
-//
-//
-        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-
-        if(currentUser.isPresent()&& seller!=null && !orderItems.isEmpty()&&pickUpAddress!=null && deliverAddress!=null){
-            Order orderToCreate = new Order();
-            orderToCreate.setBuyer(currentUser.get());
-            orderToCreate.setSeller(seller);
-            if(request.getTransporterId()!=null ){
-                Transporter transporter = transporterService.getById(request.getTransporterId());
-                orderToCreate.setTransporter(transporter);
-            }
-            orderToCreate.setItems(orderItems);
-            orderToCreate.setDeliverAddress(deliverAddress);
-            orderToCreate.setPickUpAddress(pickUpAddress);
-            orderToCreate.setStatus(OrderStatus.CREATED);
-
-            return orderRepository.save(orderToCreate);
+        if(orderItems.isEmpty()){throw new ApiRequestException("Sipariş en az bir ürün içermeli");}
+        if(seller==null){throw new ApiRequestException("Satıcı bulunamadı");}
+        if(pickUpAddress==null){throw new ApiRequestException("Alış adresi bulunamadı");}
+        if(deliverAddress==null){throw new ApiRequestException("Teslim adresi bulunamadı");}
+        Order orderToCreate = new Order();
+        orderToCreate.setBuyer(currentUser.get());
+        orderToCreate.setSeller(seller);
+        orderToCreate.setItems(orderItems);
+        orderToCreate.setDeliverAddress(deliverAddress);
+        orderToCreate.setPickUpAddress(pickUpAddress);
+        orderToCreate.setStatus(OrderStatus.CREATED);
+        Order savedOrder =  orderRepository.save(orderToCreate);
+        for (Item item :orderItems) {
+            itemService.assignToOrder(item,savedOrder);
         }
-        else{
-            return null;
-        }
+        return savedOrder;
     }
 
 }

@@ -2,6 +2,7 @@ package com.binaklet.binaklet.entities;
 
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.enums.UserRole;
+import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotBlank;
@@ -46,6 +47,7 @@ public class Item {
     List<Image> images;
 
 
+    @JsonIgnore
     @ManyToOne()
     @JoinColumn(name = "order_id")
     Order order;
@@ -69,6 +71,8 @@ public class Item {
 
     Float width;
 
+    Float depth;
+
 
 
     @PrePersist
@@ -78,10 +82,9 @@ public class Item {
 
     }
 
+    @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
     @CreatedDate
     Date createdDate;
-
-
 
 
 }
