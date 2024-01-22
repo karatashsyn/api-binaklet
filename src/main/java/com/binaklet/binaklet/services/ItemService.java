@@ -32,7 +32,13 @@ public class ItemService{
 
 
     public List<Item> getAll(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus,Long typeId){
-        return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId,itemStatus,typeId));
+        return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId, itemStatus,typeId));
+    }
+
+    public List<Item> getMyItems(String searchKey, Integer maxPrice, Integer minPrice, ItemStatus itemStatus,Long typeId){
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
+        return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,currentUser.get().getId(),itemStatus,typeId));
     }
 
 
@@ -89,11 +95,13 @@ public class ItemService{
     }
 
 
-    //TODO:Item kullanıcıya mı ait kontrolü
-    public void delete(Item itemToBeDeleted) {
+
+    public void delete(Long itemId) {
+        Optional<Item> itemToBeDeleted = itemRepository.findById(itemId);
+        if(itemToBeDeleted.isEmpty()){throw new ApiRequestException("Ürün bulunamadı");}
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
-        if(! itemToBeDeleted.getUser().equals(currentUser.get())){throw new ApiRequestException("Bu ürünü silemezsiniz");}
-        itemRepository.delete(itemToBeDeleted);
+        if(! itemToBeDeleted.get().getUser().equals(currentUser.get())){throw new ApiRequestException("Bu ürünü silemezsiniz");}
+        itemRepository.delete(itemToBeDeleted.get());
     }
 }

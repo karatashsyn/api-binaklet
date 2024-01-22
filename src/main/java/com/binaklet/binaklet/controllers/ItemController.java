@@ -34,25 +34,22 @@ public class ItemController {
                                @RequestParam(value = "status",required = false) ItemStatus status ,
                                @RequestParam(value = "type",required = false) Long typeId )
     {
-        logger.info("GET ALL ITEMS");
-        return itemService.getAllItemsExceptMine(searchKey,maxPrice,minPrice,userId,status,typeId);
-
+        return itemService.getAll(searchKey,maxPrice,minPrice,userId,status,typeId);
     }
 
 
-    //TODO: itemsin hepsine izin verme, getMyItemsi falan sil
+    //TODO: SecurityFilterde itemsin hepsine izin verme, getMyItemsi falan sil
     @GetMapping("/me")
-//    public List<Item> getMyItems(@RequestParam(value = "searchKey",required = false) String searchKey,
-//                               @RequestParam(value = "max",required = false) Integer maxPrice,
-//                               @RequestParam(value = "min",required = false) Integer minPrice,
-//                               @RequestParam(value = "byUser",required = false) Long userId ,
-//                               @RequestParam(value = "status",required = false) ItemStatus status ,
-//                               @RequestParam(value = "type",required = false) Long typeId )
-//    {
-//        logger.info("GET ALL ITEMS");
-//        return itemService.getMyItems(searchKey,maxPrice,minPrice,userId,status,typeId);
-//
-//    }
+    public List<Item> getMyItems(@RequestParam(value = "searchKey",required = false) String searchKey,
+                               @RequestParam(value = "max",required = false) Integer maxPrice,
+                               @RequestParam(value = "min",required = false) Integer minPrice,
+                               @RequestParam(value = "status",required = false) ItemStatus status ,
+                               @RequestParam(value = "type",required = false) Long typeId )
+    {
+        logger.info("GET ALL ITEMS");
+        return itemService.getMyItems(searchKey,maxPrice,minPrice,status,typeId);
+
+    }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Item> createItem(
@@ -100,6 +97,7 @@ public class ItemController {
         }
     }
 
+    //Todo:Baskasina ait urunu silememeli
 //    @DeleteMapping({"/{itemId}"})
 //    public ResponseEntity<Item> deleteItem(@PathVariable Long itemId){
 //        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();

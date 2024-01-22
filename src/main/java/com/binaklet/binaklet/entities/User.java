@@ -20,7 +20,9 @@ import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.CrossOrigin;
 
-import java.util.*;
+import java.util.Collection;
+import java.util.Date;
+import java.util.List;
 
 @Data
 @Table(name = "user")
@@ -37,8 +39,7 @@ public class User implements UserDetails {
 
 
     @Enumerated(EnumType.STRING)
-    @ElementCollection
-    private Set<UserRole> roles = new HashSet<>();
+    private UserRole role;
 
     @NotNull
     String firstName;
@@ -77,17 +78,14 @@ public class User implements UserDetails {
     protected void onCreate()
     {
         createdDate=new Date();
+
+
     }
 
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {
-        Set<GrantedAuthority> authorities = new HashSet<>();
-        for (var role: this.roles) {
-            var grantedAuthorization = new SimpleGrantedAuthority(role.name());
-            authorities.add(grantedAuthorization);
-        }
-        return authorities;
+        return List.of(new SimpleGrantedAuthority(role.name()));
     }
 
     @Override
