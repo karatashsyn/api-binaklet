@@ -37,6 +37,7 @@ public class Order {
     Date createdDate;
 
 
+    @JsonIgnore
     @OneToOne()
     @JoinColumn(name = "payment_id")
     Payment payment;
@@ -63,7 +64,6 @@ public class Order {
     User seller;
 
     @ManyToOne
-    @JsonIgnore
     @JoinColumn(name = "transporter_id")
     Transporter transporter;
 

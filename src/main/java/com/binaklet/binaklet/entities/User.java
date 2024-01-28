@@ -59,13 +59,16 @@ public class User implements UserDetails {
     @NotNull
     String phoneNumber;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
     List<Address> addresses;
 
+    @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
     List<Item> items;
 
 
+    @JsonIgnore
     @OneToOne
     @JoinColumn(name = "cart_id")
     Cart cart;

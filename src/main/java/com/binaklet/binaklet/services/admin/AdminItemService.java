@@ -20,9 +20,7 @@ import java.util.Optional;
 public class AdminItemService {
     private final ItemRepository itemRepository;
     private final ItemSpesification itemSpec;
-    private  final UserRepository userRepository;
-    private final ImageRepository imageRepository;
-    private final FileService fileService;
+
 
     public List<Item> getAll(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus, Long typeId){
         return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId, itemStatus,typeId));
