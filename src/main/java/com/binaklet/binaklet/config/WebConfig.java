@@ -1,5 +1,6 @@
 package com.binaklet.binaklet.config;
 
+import com.google.cloud.storage.HttpMethod;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.web.servlet.config.annotation.CorsRegistry;
 import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
@@ -8,6 +9,6 @@ import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 public class WebConfig implements WebMvcConfigurer {
     @Override
     public void addCorsMappings(CorsRegistry corsRegistry){
-        corsRegistry.addMapping("/**").allowedOrigins("http://localhost:3000");
+        corsRegistry.addMapping("/**").allowedOrigins("*").allowedMethods("*");
     }
 }

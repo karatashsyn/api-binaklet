@@ -22,7 +22,7 @@ public class FileService {
     private static String[] types = {".jpeg", ".png", ".heic", "jpg", "webp"};
 
     private Storage storage;
-    private static final String STORAGE_BASE_URL="https://storage.googleapis.com/binaklet-bucket/";
+    private static final String STORAGE_BASE_URL="https://storage.googleapis.com/binaklet-bucket-2/";
 
     public List<String> uploadFiles(MultipartFile[] files) throws Exception{
         this.storage = StorageOptions.getDefaultInstance().getService();
@@ -40,7 +40,7 @@ public class FileService {
             String uniqueName = java.util.UUID.randomUUID().toString()+ file.getOriginalFilename()+String.valueOf(System.currentTimeMillis());
             byte[] hashBytes = digest.digest(uniqueName.getBytes(StandardCharsets.UTF_8));
             String uuid = Base64.getEncoder().encodeToString(hashBytes).replaceAll("/","");
-            BlobId blobId = BlobId.of("binaklet-bucket",uuid);
+            BlobId blobId = BlobId.of("binaklet-bucket-2",uuid);
             BlobInfo blobInfo = BlobInfo.newBuilder(blobId).setContentType(file.getContentType()).build();
             Blob blob = storage.create(blobInfo,file.getBytes());
             urls.add(STORAGE_BASE_URL + uuid);

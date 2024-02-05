@@ -9,6 +9,9 @@ import org.springframework.web.bind.annotation.*;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import java.util.List;
 
+@CrossOrigin(origins = "*", maxAge = 3600,methods = {
+        RequestMethod.DELETE,RequestMethod.GET,RequestMethod.POST,RequestMethod.PUT,RequestMethod.PUT,RequestMethod.PATCH
+})
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/admin/items")
@@ -26,17 +29,18 @@ public class AdminItemsController {
         return adminItemService.getAll(searchKey, maxPrice, minPrice, userId, status, typeId);
     }
 
-    @PostMapping("/{itemId}")
+    @DeleteMapping("/{itemId}")
     public void deleteItem(@PathVariable String itemId) {
         try {
+            System.out.println(itemId);
             Long id = Long.parseLong(itemId);
             adminItemService.deleteItem(id);
         } catch (NumberFormatException e) {
             throw new ApiRequestException("Lütfen geçerli bir ürün kimliği giriniz");
         } catch (Exception e) {
-
-            //            throw e;
+            throw e;
         }
     }
+
 
 }

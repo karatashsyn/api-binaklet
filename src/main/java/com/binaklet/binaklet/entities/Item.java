@@ -43,7 +43,7 @@ public class Item {
     @Column(columnDefinition = "text")
     String description;
 
-    @OneToMany(mappedBy = "item",fetch = FetchType.EAGER) //DONE
+    @OneToMany(mappedBy = "item",fetch = FetchType.EAGER, orphanRemoval = true, cascade = CascadeType.REMOVE) //DONE
     List<Image> images;
 
 

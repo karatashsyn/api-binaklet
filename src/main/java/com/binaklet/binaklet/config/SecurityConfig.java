@@ -37,9 +37,9 @@ public class SecurityConfig {
                 //TODO:ADMIN FILTRESI CALISMIYOR, bunu sil
                 //TODO:ADMIN FILTRESI CALISMIYOR, bunu sil
                 .requestMatchers("/api/admin/**").permitAll()
-                .requestMatchers("/api/admin/items").permitAll()
-                .requestMatchers("/api/admin/users").permitAll()
-                .requestMatchers("/api/admin/orders").permitAll()
+                .requestMatchers("/api/admin/items/**").permitAll()
+                .requestMatchers("/api/admin/users/**").permitAll()
+                .requestMatchers("/api/admin/orders/**").permitAll()
                 //TODO:ADMIN FILTRESI CALISMIYOR, bunu sil
                 //TODO:ADMIN FILTRESI CALISMIYOR, bunu sil
                 //TODO:ADMIN FILTRESI CALISMIYOR, bunu sil

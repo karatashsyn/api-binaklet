@@ -19,7 +19,7 @@ public class Cart {
 
 
 
-    @ManyToMany()
+    @ManyToMany(cascade = CascadeType.DETACH,fetch = FetchType.EAGER)
     @JoinTable(name = "cart_item",
             joinColumns = @JoinColumn(name = "cart_id"),
             inverseJoinColumns = @JoinColumn(name="item_id"))
@@ -29,6 +29,5 @@ public class Cart {
     protected void onCreate()
     {
         this.items= new ArrayList<>();
-
     }
 }
