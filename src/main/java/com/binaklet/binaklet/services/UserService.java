@@ -2,6 +2,7 @@ package com.binaklet.binaklet.services;
 
 import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.entities.Item;
+import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.CartRepository;
 import com.binaklet.binaklet.repositories.OrderRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
@@ -10,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.Collection;
@@ -34,5 +36,11 @@ public class UserService{
 
     public List<User> getAll(){
         return userRepo.findAll();
+    }
+
+    public User getMe(){
+        Optional<User> currentUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
+        return currentUser.get();
     }
 }

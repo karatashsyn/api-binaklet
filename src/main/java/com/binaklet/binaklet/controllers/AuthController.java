@@ -29,8 +29,21 @@ public class AuthController {
         }
     }
 
+    //TODO:Create getMe function with token coming from request header
+//    @PostMapping("/getMe")
+//    public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
+//        AuthenticationResponse response = authService.register(request);
+//        if(response.getToken()!=null){
+//            return ResponseEntity.ok(response);
+//        }
+//        else{
+//            return ResponseEntity.status(403).body(response);
+//        }
+//    }
+
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request){
+        System.out.println(request.toString());
         AuthenticationResponse response = authService.login(request);
         if(response.getToken()!=null && !response.getToken().isBlank()){
             return ResponseEntity.ok(authService.login(request));

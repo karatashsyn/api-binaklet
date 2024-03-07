@@ -12,22 +12,14 @@ import java.util.List;
 
 @RestController
 @RequiredArgsConstructor
-@RequestMapping("/api/users")
-public class UserController {
-
+@RequestMapping("/api/me")
+public class ProfileController {
 
     private final UserService userService;
 
     @GetMapping
-    public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userService.getAll();
-        return ResponseEntity.ok().body(users);
+    public ResponseEntity<User> getUsers() {
+        return ResponseEntity.ok().body(userService.getMe());
     }
 
-
-    @GetMapping({"/{userId}"})
-    public User getUser(@PathVariable Long userId) {
-        return userService.getById(userId);
-    }
 }
-
