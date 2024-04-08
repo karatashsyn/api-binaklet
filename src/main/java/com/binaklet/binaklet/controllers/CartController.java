@@ -1,6 +1,7 @@
 package com.binaklet.binaklet.controllers;
 import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.requests.AddToCartRequest;
+import com.binaklet.binaklet.requests.RemoveItemFromCart;
 import com.binaklet.binaklet.services.CartService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
@@ -16,17 +17,20 @@ public class CartController {
     private final CartService cartService;
     @PostMapping(value = {"/addItemToMyCart"},consumes = MediaType.APPLICATION_JSON_VALUE)
     ResponseEntity<Cart> addItemToMyCart(@RequestBody AddToCartRequest request){
+        System.out.println(request.toString());
         List<Long> itemIds = request.getItemIds();
         Cart updatedCart = cartService.addItemsToMyCart(itemIds);
         return ResponseEntity.ok().body(updatedCart);
     }
 
-    //TODO: For admins
-//    @GetMapping( )
-//    ResponseEntity<List<Cart>> getAll(){
-//        List<Cart> data = cartService.getAll();
-//        return ResponseEntity.ok().body(data);
-//    }
+    @PostMapping(value = {"/removeItemFromCart"})
+    ResponseEntity<Cart> removeItemFromCart(@RequestBody RemoveItemFromCart request){
+        System.out.println(request.toString());
+        Long itemId = request.getItemId();
+        Cart updatedCart = cartService.removeItemFromMyCart(itemId);
+        return ResponseEntity.ok().body(updatedCart);
+    }
+
 
     @GetMapping({"/getMyCart"} )
     ResponseEntity<Cart> addItemToMyCart(){

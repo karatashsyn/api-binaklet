@@ -1,5 +1,6 @@
 package com.binaklet.binaklet.controllers;
 
+import com.binaklet.binaklet.DTOs.ItemDetailDto;
 import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
@@ -84,7 +85,7 @@ public class ItemController {
 
     @GetMapping({"/{itemId}"})
 
-    public Item getitem(@PathVariable String itemId){
+    public ItemDetailDto getItem(@PathVariable String itemId){
         try {
             Long id = Long.parseLong(itemId.trim());
             return itemService.getById(id);

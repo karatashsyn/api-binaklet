@@ -45,19 +45,18 @@ public class AuthService {
             User createdUser = userService.createUserWithEmptyCard(user);
             var token = jwtService.generateToken(user);
             return AuthenticationResponse.builder()
-                    .token(token)
+                    .token(token).user(createdUser)
                     .build();
         }
 
     }
 
     public AuthenticationResponse login(LoginRequest request) {
-
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
-            var user = userRepository.findByEmail(request.getEmail()).orElseThrow();
-            var token = jwtService.generateToken(user);
-            return AuthenticationResponse.builder().token(token).build();
+            var foundUser = userRepository.findByEmail(request.getEmail()).orElseThrow();
+            var token = jwtService.generateToken(foundUser);
+            return AuthenticationResponse.builder().token(token).user(foundUser).build();
         }
         catch (AuthenticationException e){
             return null;

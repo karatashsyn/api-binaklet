@@ -41,7 +41,7 @@ public class OrderService{
         List<Item> orderItems = new ArrayList<>();
         for (Long id :itemsId
         ) {
-            Item foundItem = itemService.getById(id);
+            Item foundItem = itemService.get(id);
 
             if(foundItem.getId()==null){
                 throw new ApiRequestException("Eklemek istenilen ürün sistemde bulunmamaktadır");

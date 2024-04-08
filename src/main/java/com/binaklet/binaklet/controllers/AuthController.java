@@ -20,8 +20,9 @@ public class AuthController {
     private final AuthService authService;
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody RegisterRequest request){
+        System.out.println(request.toString());
         AuthenticationResponse response = authService.register(request);
-        if(response.getToken()!=null){
+        if(response!=null && response.getToken()!=null){
             return ResponseEntity.ok(response);
         }
         else{
@@ -44,8 +45,9 @@ public class AuthController {
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody LoginRequest request){
         System.out.println(request.toString());
+        System.out.println(request);
         AuthenticationResponse response = authService.login(request);
-        if(response.getToken()!=null && !response.getToken().isBlank()){
+        if(response!=null&& response.getToken()!=null && !response.getToken().isBlank()){
             return ResponseEntity.ok(authService.login(request));
         }
         else{

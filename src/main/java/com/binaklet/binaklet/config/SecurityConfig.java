@@ -28,8 +28,6 @@ public class SecurityConfig {
                 .csrf()
                 .disable()
                 .authorizeHttpRequests()
-
-
                 .requestMatchers(HttpMethod.GET,"/api/items/**","/api/users/**", "/api/transporters/").permitAll()
                 .requestMatchers(HttpMethod.POST,"/api/auth/**").permitAll()
 

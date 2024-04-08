@@ -1,4 +1,6 @@
 package com.binaklet.binaklet.services;
+import com.binaklet.binaklet.DTOs.BasicUserDto;
+import com.binaklet.binaklet.DTOs.ItemDetailDto;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import org.springframework.stereotype.Service;
 import com.binaklet.binaklet.entities.*;
@@ -32,7 +34,10 @@ public class ItemService{
 
 
     public List<Item> getAll(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus,Long typeId){
-        return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId, itemStatus,typeId));
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
+        List<Item> allItems= itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId, itemStatus,typeId));
+        return allItems.stream().filter(item -> !item.getUser().getId().equals(currentUser.get().getId())).collect(Collectors.toList());
     }
 
     public List<Item> getMyItems(String searchKey, Integer maxPrice, Integer minPrice, ItemStatus itemStatus,Long typeId){
@@ -40,14 +45,6 @@ public class ItemService{
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
         return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,currentUser.get().getId(),itemStatus,typeId));
     }
-
-
-    public List<Item> getAllItemsExceptMine(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus,Long typeId){
-        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
-        return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId,itemStatus,typeId)).stream().filter(item-> item.getUser().getId().equals(currentUser.get().getId())).collect(Collectors.toList());
-    }
-
 
 
 
@@ -82,9 +79,21 @@ public class ItemService{
         savedItem.setImages(imagesToSave);
         return savedItem;
     }
-    public Item getById(Long id){
+    public ItemDetailDto getById(Long id){
         Optional<Item> foundItem = itemRepository.findById(id);
         if(foundItem.isEmpty()){throw new ApiRequestException("Ürün bulunamadı.");}
+        Item item = foundItem.get();
+        User owner = item.getUser();
+        BasicUserDto ownerDto = BasicUserDto.builder().email(owner.getEmail()).addresses(owner.getAddresses().stream().map(address -> address.getAddressText()).collect((Collectors.toList()))).firstName(owner.getFirstName()).lastName(owner.getLastName()).build();
+        return ItemDetailDto.builder().name(item.getName()).id(item.getId()).mass(item.getMass()).brand(item.getBrand()
+        ).age(item.getAge()).owner(ownerDto).price(item.getPrice()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getItemType()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()
+        ).build();
+
+    }
+
+    public Item get(Long id){
+        Optional<Item> foundItem = itemRepository.findById(id);
+        if(foundItem.isEmpty()){throw new ApiRequestException("Item Bulunamadı");}
         return foundItem.get();
     }
 

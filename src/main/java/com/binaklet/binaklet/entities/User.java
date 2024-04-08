@@ -81,10 +81,7 @@ public class User implements UserDetails {
     protected void onCreate()
     {
         createdDate=new Date();
-
-
     }
-
 
     @Override
     public Collection<? extends GrantedAuthority> getAuthorities() {

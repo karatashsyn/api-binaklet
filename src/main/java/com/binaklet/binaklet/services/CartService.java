@@ -16,6 +16,7 @@ import org.springframework.stereotype.Service;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
@@ -55,6 +56,33 @@ public class CartService {
         }
 
     }
+
+    public Cart removeItemFromMyCart(Long itemId){
+        try {
+            String email =  SecurityContextHolder.getContext().getAuthentication().getName();
+            User currentUser = userRepo.findByEmail(email).orElse(null);
+            assert currentUser != null;
+            Cart cartOfTheUser = currentUser.getCart();
+            List<Item> itemsOfCart = cartOfTheUser.getItems();
+
+            if(itemsOfCart.isEmpty()){
+                throw new ApiRequestException("Sepet zaten boş");
+            }
+
+            Optional<Item> itemToRemove = itemsOfCart.stream().filter(item->item.getId().equals(itemId)).findFirst();
+            if(itemToRemove.isEmpty()){throw new ApiRequestException("Ürün bulunamadı");}
+            itemsOfCart.remove(itemToRemove.get());
+            //If successful, add all items to current cart content
+            cartOfTheUser.setItems(itemsOfCart);
+            return cartRepo.save(cartOfTheUser);
+        }
+        catch (Exception e){
+            throw new ApiRequestException(e.getMessage());
+        }
+
+    }
+
+
 
 
 //    public List<Cart> getAll(){
