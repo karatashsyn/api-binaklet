@@ -43,6 +43,7 @@ public class ItemService{
     public List<Item> getMyItems(String searchKey, Integer maxPrice, Integer minPrice, ItemStatus itemStatus,Long typeId){
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
+//        return itemRepository.findAll().stream().filter(item -> item.getUser().getId().equals(currentUser.get().getId())).collect(Collectors.toList())
         return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,currentUser.get().getId(),itemStatus,typeId));
     }
 
@@ -69,6 +70,10 @@ public class ItemService{
             Image savedImage = imageRepository.save(newImg);
             imagesToSave.add(savedImage);
         }
+        System.out.println("==============");
+
+        System.out.println("Item TO Create");
+        System.out.println("==============");
 
         Item savedItem = itemRepository.save(itemToCreate);
         for (Image img:imagesToSave
@@ -76,7 +81,15 @@ public class ItemService{
             img.setItem(savedItem);
             imageRepository.save(img);
         }
+        System.out.println("==============");
+        System.out.println("Item Saved ");
         savedItem.setImages(imagesToSave);
+        System.out.println("==============");
+
+
+        System.out.println("==============");
+        System.out.println("Item's images set ");
+        System.out.println("==============");
         return savedItem;
     }
     public ItemDetailDto getById(Long id){
@@ -102,7 +115,6 @@ public class ItemService{
         itemToBeAssigned.setStatus(ItemStatus.SOLD);
         itemRepository.save(itemToBeAssigned);
     }
-
 
 
     public void delete(Long itemId) {

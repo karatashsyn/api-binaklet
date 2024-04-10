@@ -2,8 +2,10 @@ package com.binaklet.binaklet.spesifications;
 
 import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.ItemType;
+import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.services.ItemTypeService;
+import com.binaklet.binaklet.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.context.annotation.Bean;
 import org.springframework.data.jpa.domain.Specification;
@@ -15,6 +17,7 @@ import java.util.Optional;
 public class ItemSpesification {
 
     private final ItemTypeService itemTypeService;
+    private final UserService userService;
     public Specification<Item> status(ItemStatus status){
         return (root,query,cb)->
                 cb.equal(root.get("status"),status);
@@ -46,7 +49,8 @@ public class ItemSpesification {
     }
 
     public Specification<Item> byUser(Long id){
-        return (root, query, cb) ->cb.equal(root.get("id"),id);
+        User filterUser = userService.getById(id);
+        return (root, query, cb) ->cb.equal(root.get("user"),filterUser);
     }
 
 

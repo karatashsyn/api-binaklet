@@ -1,4 +1,6 @@
 package com.binaklet.binaklet.controllers;
+import com.binaklet.binaklet.DTOs.BasicItemDto;
+import com.binaklet.binaklet.DTOs.CartDto;
 import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.requests.AddToCartRequest;
 import com.binaklet.binaklet.requests.RemoveItemFromCart;
@@ -33,9 +35,9 @@ public class CartController {
 
 
     @GetMapping({"/getMyCart"} )
-    ResponseEntity<Cart> addItemToMyCart(){
-        Cart updatedCart = cartService.getMyCart();
-        return ResponseEntity.ok().body(updatedCart);
+    ResponseEntity<CartDto> addItemToMyCart(){
+        CartDto userCart = cartService.getMyCart();
+        return ResponseEntity.ok().body(userCart);
     }
 
 }

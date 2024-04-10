@@ -10,6 +10,7 @@ import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
@@ -47,7 +48,7 @@ public class ItemController {
                                @RequestParam(value = "status",required = false) ItemStatus status ,
                                @RequestParam(value = "type",required = false) Long typeId )
     {
-        logger.info("GET ALL ITEMS");
+        logger.info("GET MY ITEMS");
         return itemService.getMyItems(searchKey,maxPrice,minPrice,status,typeId);
 
     }
@@ -70,9 +71,8 @@ public class ItemController {
         logger.info("CREATE ITEM");
         logger.info("CREATE ITEM/ NAME: " + name);
         logger.info("CREATE ITEM / IMAGES: " + images);
-        MultipartFile[] fakeImgList = new MultipartFile[0];
-        //TODO: fakeImgList yerine images parami gelicek
-        Item itemToCreate = new Item();
+//        MultipartFile[] fakeImgList = new MultipartFile[0];
+
         ItemType itemType = itemTypeService.getById(typeId);
         if (itemType != null) {
             return ResponseEntity.ok().body(itemService.create(name, itemType, description, price, height, width,depth, images ,mass, brand));
@@ -98,23 +98,24 @@ public class ItemController {
         }
     }
 
-    //Todo:Baskasina ait urunu silememeli
-//    @DeleteMapping({"/{itemId}"})
-//    public ResponseEntity<Item> deleteItem(@PathVariable Long itemId){
-//        String currentUserName = SecurityContextHolder.getContext().getAuthentication().getName();
-//        Item itemToBeDeleted = itemService.getById(itemId);
-//        if(itemToBeDeleted==null){
-//            return ResponseEntity.badRequest().body(null);
-//        }
-//
-//        else if(!itemToBeDeleted.getUser().getEmail().equals(currentUserName)){
-//            return ResponseEntity.status(403).body(null);
-//        }
-//        else if(itemToBeDeleted!=null && itemToBeDeleted.getUser().getEmail().equals(currentUserName)){
-//            itemService.delete(itemToBeDeleted);
-//        }
-//        return null;
-//    }
+
+    @PostMapping({"/deleteItem"})
+    public void deleteItem(Long itemId){
+        try {
+            Long id = Long.parseLong(itemId.toString().trim());
+            ItemDetailDto itemToBeDeleted = itemService.getById(id);
+            if(itemToBeDeleted==null){
+                throw new ApiRequestException("Ürün bulunamadı.");
+            }
+            else{itemService.delete(id);}
+        }
+        catch(NumberFormatException  e) {
+            throw new ApiRequestException("Lütfen geçerli bir ürün kimliği giriniz");
+        }
+        catch (Exception e){
+            throw e;
+        }
+    }
 
 //    @PostMapping({"/{itemId}"})
 //    public Item updateitem(@PathVariable Long itemId, @RequestBody Item newItem){
