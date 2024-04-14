@@ -53,13 +53,13 @@ public class User implements UserDetails {
     String email;
 
 
+    @JsonIgnore
     @NotNull
     String password;
 
     @NotNull
     String phoneNumber;
 
-    @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
     List<Address> addresses;
 

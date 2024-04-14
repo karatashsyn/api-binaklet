@@ -27,7 +27,6 @@ public class UserCommentController {
     private  final UserService userService;
     private final UserRepository userRepo;
 
-
     @GetMapping
     public List<UserComment> getAll(){
         return userCommentService.getAll();

@@ -25,7 +25,7 @@ public class AdminAddressController {
 
 
     @GetMapping
-    public List<Address> getMyAddresses(){
+    public List<Address> getAll(){
         return addressService.getAll();
     }
 

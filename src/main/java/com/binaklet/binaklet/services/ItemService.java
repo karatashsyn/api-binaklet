@@ -97,7 +97,7 @@ public class ItemService{
         if(foundItem.isEmpty()){throw new ApiRequestException("Ürün bulunamadı.");}
         Item item = foundItem.get();
         User owner = item.getUser();
-        BasicUserDto ownerDto = BasicUserDto.builder().email(owner.getEmail()).addresses(owner.getAddresses().stream().map(address -> address.getAddressText()).collect((Collectors.toList()))).firstName(owner.getFirstName()).lastName(owner.getLastName()).build();
+        BasicUserDto ownerDto = BasicUserDto.builder().email(owner.getEmail()).addresses(owner.getAddresses().stream().map(address -> address.getAddressText()).collect((Collectors.toList()))).firstName(owner.getFirstName()).lastName(owner.getLastName()).id(owner.getId()).build();
         return ItemDetailDto.builder().name(item.getName()).id(item.getId()).mass(item.getMass()).brand(item.getBrand()
         ).age(item.getAge()).owner(ownerDto).price(item.getPrice()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getItemType()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()
         ).build();
