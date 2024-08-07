@@ -6,7 +6,7 @@ import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.annotation.Nullable;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
-import lombok.Data;
+import lombok.*;
 import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.*;
@@ -15,6 +15,8 @@ import java.util.List;
 
 
 @Data
+@NoArgsConstructor
+@AllArgsConstructor(staticName = "build")
 @Entity
 @Table(name = "address")
 public class Address {
@@ -24,8 +26,16 @@ public class Address {
     Long id;
 
     @NotNull
-    @NotBlank
+    String addressTitle;
+
+    @NotNull
     String addressText;
+
+    @NotNull
+    String contactPhone;
+
+
+    Boolean isUserDefault;
 
 
     @ManyToOne(fetch = FetchType.EAGER)

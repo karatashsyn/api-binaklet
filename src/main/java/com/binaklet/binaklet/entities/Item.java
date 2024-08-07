@@ -1,17 +1,12 @@
 package com.binaklet.binaklet.entities;
 
 import com.binaklet.binaklet.enums.ItemStatus;
-import com.binaklet.binaklet.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
-import jakarta.validation.constraints.NotBlank;
-import jakarta.validation.constraints.NotNull;
-import lombok.Builder;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 
@@ -28,14 +23,12 @@ public class Item {
 
 
 
-    Integer price;
+    Float price;
 
     Float mass;
 
 
     String brand;
-
-    Float age;
 
     ItemStatus status;
 
@@ -65,7 +58,8 @@ public class Item {
 
     @ManyToOne(fetch = FetchType.EAGER) //DONE
     @JoinColumn(name = "item_type_id")
-    ItemType itemType;
+    Category itemType;
+
 
     Float height;
 

@@ -1,4 +1,4 @@
-package com.binaklet.binaklet.requests;
+package dto.requests.transporter;
 
 import lombok.Data;
 

@@ -1,15 +1,13 @@
 package com.binaklet.binaklet.DTOs;
 
-import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.Payment;
 import com.binaklet.binaklet.enums.OrderStatus;
-import jakarta.persistence.Basic;
+import dto.responses.item.BasicItemDTO;
 import lombok.Builder;
 import lombok.Data;
 
 import java.util.Date;
 import java.util.List;
-import java.util.Optional;
 
 @Data
 @Builder
@@ -23,6 +21,6 @@ public class AdminOrderDto {
     String deliverAddress;
     BasicUserDto buyer;
     BasicUserDto seller;
-    List<BasicItemDto> items;
+    List<BasicItemDTO> items;
 
 }

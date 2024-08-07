@@ -1,12 +1,12 @@
-package com.binaklet.binaklet.requests.Admin;
+package dto.requests.Admin;
 
 
 import lombok.Data;
 
 @Data
 public class AdminOrderCreateRequest {
-    Long pickUpAddressId;
-    Long deliverAddressId;
+    String pickUpAddress;
+    String deliverAddress;
     Long[]itemIds;
     Long sellerId;
     Long buyerId;

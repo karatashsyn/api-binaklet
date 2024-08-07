@@ -1,16 +1,11 @@
 package com.binaklet.binaklet.services;
 
-import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.Transporter;
 import com.binaklet.binaklet.repositories.AddressRepository;
 import com.binaklet.binaklet.repositories.TransporterRepository;
-import com.binaklet.binaklet.requests.TransporterCreateRequest;
+import dto.requests.Admin.TransporterCreateRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.data.jpa.repository.Query;
-import org.springframework.data.repository.query.Param;
 import org.springframework.stereotype.Service;
-import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 

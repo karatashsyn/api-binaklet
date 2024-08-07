@@ -6,7 +6,7 @@ import com.binaklet.binaklet.entities.UserComment;
 import com.binaklet.binaklet.repositories.TransporterRepository;
 import com.binaklet.binaklet.repositories.UserCommentRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
-import com.binaklet.binaklet.requests.UserCommentCreateRequest;
+import dto.requests.transporter.UserCommentCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;

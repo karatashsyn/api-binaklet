@@ -1,11 +1,8 @@
 package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.entities.Transporter;
-import com.binaklet.binaklet.requests.TransporterCreateRequest;
+import dto.requests.Admin.TransporterCreateRequest;
 import com.binaklet.binaklet.services.TransporterService;
-import com.binaklet.binaklet.services.UserService;
-import com.binaklet.binaklet.entities.User;
-import org.springframework.security.config.annotation.authentication.configuration.EnableGlobalAuthentication;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;

@@ -1,9 +1,7 @@
 package com.binaklet.binaklet.controllers;
 import com.binaklet.binaklet.DTOs.AdminOrderDto;
 import com.binaklet.binaklet.entities.Order;
-import com.binaklet.binaklet.requests.Admin.AdminOrderCreateRequest;
-import com.binaklet.binaklet.requests.OrderCreateRequest;
-import com.binaklet.binaklet.services.OrderService;
+import dto.requests.Admin.AdminOrderCreateRequest;
 import com.binaklet.binaklet.services.admin.AdminOrderService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,7 +20,7 @@ public class AdminOrderController {
     @PostMapping()
     public ResponseEntity<Order> createOrder(@RequestBody AdminOrderCreateRequest request){
         System.out.println(request.toString());
-        if(request.getItemIds().length<1 || request.getSellerId()==null || request.getDeliverAddressId()==null || request.getPickUpAddressId()==null){
+        if(request.getItemIds().length<1 || request.getSellerId()==null || request.getDeliverAddress()==null || request.getPickUpAddress()==null){
             return ResponseEntity.badRequest().body(null);
         }
         Order createdOrder =adminOrderService.create(request);

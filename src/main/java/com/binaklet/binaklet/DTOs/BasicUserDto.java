@@ -10,7 +10,6 @@ import java.util.List;
 public class BasicUserDto {
     Long id;
     String email;
-    String firstName;
-    String lastName;
+    String name;
     List<String> addresses;
 }

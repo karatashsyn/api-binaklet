@@ -6,11 +6,8 @@ import com.binaklet.binaklet.enums.OrderStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.OrderRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
-import com.binaklet.binaklet.requests.OrderCreateRequest;
-import com.fasterxml.jackson.databind.util.BeanUtil;
+import dto.requests.order.OrderCreateRequest;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.BeanUtils;
-import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -28,16 +25,17 @@ public class OrderService{
     private final ItemService itemService;
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
-
+    private final CartService cartService;
 
 
     public Order create (OrderCreateRequest request){
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili Kullanıcı Bulunamadı");}
-        Address pickUpAddress = addressService.getById(request.getPickUpAddressId());
-        Address deliverAddress = addressService.getById(request.getDeliverAddressId());
+        String pickUpAddress =request.getPickupAddress();
+        String deliverAddress =request.getDeliverAddress();
 
         Long[] itemsId = request.getItemIds();
+
         List<Item> orderItems = new ArrayList<>();
         for (Long id :itemsId
         ) {
@@ -65,8 +63,10 @@ public class OrderService{
         orderToCreate.setStatus(OrderStatus.CREATED);
         Order savedOrder =  orderRepository.save(orderToCreate);
         for (Item item :orderItems) {
+            item.setStatus(ItemStatus.SOLD);
             itemService.assignToOrder(item,savedOrder);
         }
+        cartService.clearUserCart( currentUser.get().getId());
         return savedOrder;
     }
 

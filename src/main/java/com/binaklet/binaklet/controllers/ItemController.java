@@ -1,29 +1,30 @@
 package com.binaklet.binaklet.controllers;
 
-import com.binaklet.binaklet.DTOs.ItemDetailDto;
+import dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
+import dto.requests.item.CreateItemRequest;
 import com.binaklet.binaklet.services.*;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import lombok.extern.log4j.Log4j;
 import lombok.extern.log4j.Log4j2;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.web.multipart.MultipartFile;
 
 
 @RestController
 @RequiredArgsConstructor
 @RequestMapping("/api/items")
 @Log4j2
+@Validated
 public class ItemController {
     private final ItemService itemService;
     private final ItemTypeService itemTypeService;
@@ -36,6 +37,7 @@ public class ItemController {
                                @RequestParam(value = "status",required = false) ItemStatus status ,
                                @RequestParam(value = "type",required = false) Long typeId )
     {
+        System.out.println("SEARCH ITEMS runned");
         return itemService.getAll(searchKey,maxPrice,minPrice,userId,status,typeId);
     }
 
@@ -50,42 +52,22 @@ public class ItemController {
     {
         logger.info("GET MY ITEMS");
         return itemService.getMyItems(searchKey,maxPrice,minPrice,status,typeId);
-
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     public ResponseEntity<Item> createItem(
-            @RequestParam(value = "images",required = false)MultipartFile[] images,
-            @RequestParam("name") String name,
-            @RequestParam(value = "age", required = false) Float age,
-            @RequestParam("mass") Float mass,
-            @RequestParam("price") Integer price,
-            @RequestParam(value = "brand", required = false ) String brand,
-            @RequestParam("description") String description,
-            @RequestParam(value = "tagIds", required = false) Long[] tagIds,
-            @RequestParam("typeId") Long typeId,
-            @RequestParam("height") Float height,
-            @RequestParam("width") Float width,
-            @RequestParam("depth") Float depth
+            @Valid @RequestBody CreateItemRequest request
             ) throws IOException,Exception {
-        logger.info("CREATE ITEM");
-        logger.info("CREATE ITEM/ NAME: " + name);
-        logger.info("CREATE ITEM / IMAGES: " + images);
-//        MultipartFile[] fakeImgList = new MultipartFile[0];
 
-        ItemType itemType = itemTypeService.getById(typeId);
-        if (itemType != null) {
-            return ResponseEntity.ok().body(itemService.create(name, itemType, description, price, height, width,depth, images ,mass, brand));
-        }
-        else{
-            return ResponseEntity.badRequest().body(null);
-        }
+        return ResponseEntity.ok().body(itemService.create(request));
+
+
     }
 
 
     @GetMapping({"/{itemId}"})
 
-    public ItemDetailDto getItem(@PathVariable String itemId){
+    public ItemDetailDTO getItem(@PathVariable String itemId){
         try {
             Long id = Long.parseLong(itemId.trim());
             return itemService.getById(id);
@@ -103,7 +85,7 @@ public class ItemController {
     public void deleteItem(Long itemId){
         try {
             Long id = Long.parseLong(itemId.toString().trim());
-            ItemDetailDto itemToBeDeleted = itemService.getById(id);
+            ItemDetailDTO itemToBeDeleted = itemService.getById(id);
             if(itemToBeDeleted==null){
                 throw new ApiRequestException("Ürün bulunamadı.");
             }

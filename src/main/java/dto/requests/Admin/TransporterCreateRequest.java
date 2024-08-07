@@ -1,4 +1,4 @@
-package com.binaklet.binaklet.requests;
+package dto.requests.Admin;
 
 import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.Order;

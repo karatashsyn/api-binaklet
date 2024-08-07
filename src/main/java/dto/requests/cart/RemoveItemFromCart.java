@@ -1,4 +1,4 @@
-package com.binaklet.binaklet.requests;
+package dto.requests.cart;
 import lombok.Data;
 import java.util.List;
 

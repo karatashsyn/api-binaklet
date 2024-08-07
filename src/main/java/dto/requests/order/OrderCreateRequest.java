@@ -1,11 +1,12 @@
-package com.binaklet.binaklet.requests;
+package dto.requests.order;
 
 import lombok.Data;
 
 @Data
 public class OrderCreateRequest {
-    Long pickUpAddressId;
-    Long deliverAddressId;
+    String pickupAddress;
+    String deliverAddress;
+    Long buyerId;
     Long[]itemIds;
     Long sellerId;
 }

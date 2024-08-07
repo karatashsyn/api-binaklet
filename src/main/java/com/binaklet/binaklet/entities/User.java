@@ -28,7 +28,7 @@ import java.util.List;
 @Table(name = "user")
 @Entity
 @NoArgsConstructor
-@AllArgsConstructor
+@AllArgsConstructor(staticName = "build")
 @Builder
 
 public class User implements UserDetails {
@@ -42,10 +42,8 @@ public class User implements UserDetails {
     private UserRole role;
 
     @NotNull
-    String firstName;
+    String name;
 
-
-    String lastName;
 
     @Email
     @NotNull

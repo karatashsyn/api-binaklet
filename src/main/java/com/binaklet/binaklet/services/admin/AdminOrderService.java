@@ -1,7 +1,7 @@
 package com.binaklet.binaklet.services.admin;
 
 import com.binaklet.binaklet.DTOs.AdminOrderDto;
-import com.binaklet.binaklet.DTOs.BasicItemDto;
+import dto.responses.item.BasicItemDTO;
 import com.binaklet.binaklet.DTOs.BasicUserDto;
 import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.ItemStatus;
@@ -10,20 +10,16 @@ import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.ItemRepository;
 import com.binaklet.binaklet.repositories.OrderRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
-import com.binaklet.binaklet.requests.Admin.AdminOrderCreateRequest;
-import com.binaklet.binaklet.requests.OrderCreateRequest;
+import dto.requests.Admin.AdminOrderCreateRequest;
 import com.binaklet.binaklet.services.AddressService;
 import com.binaklet.binaklet.services.ItemService;
-import com.binaklet.binaklet.services.TransporterService;
 import com.binaklet.binaklet.services.UserService;
 import lombok.RequiredArgsConstructor;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -39,17 +35,17 @@ public class AdminOrderService {
         List<Order> orders  = orderRepository.findAll();
         List<AdminOrderDto> resultOrders = new ArrayList<>();
         for (Order order :orders) {
-            List<BasicItemDto> orderItems = new ArrayList<>();
+            List<BasicItemDTO> orderItems = new ArrayList<>();
             for (Item item : order.getItems()){
                 List<String> itemImages = item.getImages().stream().map(Image::getUrl).toList();
-                orderItems.add(BasicItemDto.builder().images(itemImages).name(item.getName()).price(item.getPrice()).build());
+                orderItems.add(BasicItemDTO.builder().images(itemImages).name(item.getName()).price(item.getPrice()).build());
             }
             AdminOrderDto dto = AdminOrderDto.builder()
                     .id(order.getId())
                     .seller(BasicUserDto.builder().email(order.getSeller().getEmail()).id(order.getSeller().getId()).build())
                     .buyer(BasicUserDto.builder().email(order.getBuyer().getEmail()).id(order.getBuyer().getId()).build())
-                    .deliverAddress(order.getDeliverAddress().getAddressText())
-                    .pickUpAddress(order.getPickUpAddress().getAddressText())
+                    .deliverAddress(order.getDeliverAddress())
+                    .pickUpAddress(order.getPickUpAddress())
                     .payment(order.getPayment())
                     .status(order.getStatus())
                     .createdDate(order.getCreatedDate())
@@ -62,8 +58,8 @@ public class AdminOrderService {
 
 
     public Order create (AdminOrderCreateRequest request){
-        Address pickUpAddress = addressService.getById(request.getPickUpAddressId());
-        Address deliverAddress = addressService.getById(request.getDeliverAddressId());
+        String pickUpAddress = request.getPickUpAddress();
+        String deliverAddress = request.getDeliverAddress();
 
         Long[] itemsId = request.getItemIds();
         List<Item> orderItems = new ArrayList<>();

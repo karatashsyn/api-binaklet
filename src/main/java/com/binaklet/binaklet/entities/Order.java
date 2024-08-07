@@ -42,16 +42,21 @@ public class Order {
     @JoinColumn(name = "payment_id")
     Payment payment;
 
-    @ManyToOne
-    @JoinColumn(name = "pickup_adress_id")
-    Address pickUpAddress;
 
-    @ManyToOne
-    @JoinColumn
-    Address deliverAddress;
+    String pickUpAddress;
 
 
-    @OneToMany(mappedBy = "order",fetch = FetchType.LAZY)
+    String deliverAddress;
+
+
+//    @OneToMany(mappedBy = "order")
+//    List<Item> items;
+
+    @JsonIgnore
+    @OneToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "order_item",
+            joinColumns = @JoinColumn(name = "order_id"),
+            inverseJoinColumns = @JoinColumn(name="item_id"))
     List<Item> items;
 
     @ManyToOne(fetch = FetchType.LAZY)

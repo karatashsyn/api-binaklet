@@ -1,28 +1,25 @@
 package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.entities.Address;
-import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.repositories.UserRepository;
-import com.binaklet.binaklet.requests.AddressCreateRequest;
+import dto.requests.address.CreateAddressRequest;
 import com.binaklet.binaklet.services.AddressService;
 import com.binaklet.binaklet.services.UserService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Optional;
 
 @RestController
 @RequestMapping("/api/addresses")
 @RequiredArgsConstructor
+@Validated
 public class AddressController {
 
 
     private final AddressService addressService;
-    private  final UserService userService;
-    private final UserRepository userRepo;
 
 
     @GetMapping
@@ -31,7 +28,7 @@ public class AddressController {
     }
 
     @PostMapping()
-    public Address createAddress(@RequestBody AddressCreateRequest request){
+    public Address createAddress(@RequestBody @Valid CreateAddressRequest request){
         return addressService.create(request);
     }
 

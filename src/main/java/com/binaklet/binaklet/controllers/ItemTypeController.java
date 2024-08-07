@@ -1,6 +1,6 @@
 package com.binaklet.binaklet.controllers;
 
-import com.binaklet.binaklet.entities.ItemType;
+import com.binaklet.binaklet.entities.Category;
 import com.binaklet.binaklet.services.ItemTypeService;
 import org.springframework.web.bind.annotation.*;
 
@@ -16,22 +16,22 @@ public class ItemTypeController {
     }
 
     @GetMapping
-    public List<ItemType> getItemsTypes(){
+    public List<Category> getItemsTypes(){
         return itemTypeService.getAll();
     }
 
     @PostMapping()
-    public ItemType createItemType(@RequestBody ItemType newItem){
+    public Category createItemType(@RequestBody Category newItem){
         return itemTypeService.create(newItem);
     }
 
     @GetMapping({"/{itemTypeId}"})
-    public ItemType getItemType(@PathVariable Long itemTypeId){
+    public Category getItemType(@PathVariable Long itemTypeId){
         return itemTypeService.getById(itemTypeId);
     }
 
     @PostMapping({"/{itemTypeId}"})
-    public ItemType updateItem(@PathVariable Long itemTypeId, @RequestBody ItemType newItemType){
+    public Category updateItem(@PathVariable Long itemTypeId, @RequestBody Category newItemType){
         return itemTypeService.update(itemTypeId, newItemType);
     }
 }

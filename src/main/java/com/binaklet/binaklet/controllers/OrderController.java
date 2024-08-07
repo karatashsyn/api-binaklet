@@ -1,19 +1,11 @@
 package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.entities.*;
-import com.binaklet.binaklet.enums.ItemStatus;
-import com.binaklet.binaklet.enums.OrderStatus;
-import com.binaklet.binaklet.requests.OrderCreateRequest;
+import dto.requests.order.OrderCreateRequest;
 import com.binaklet.binaklet.services.*;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
-import org.aspectj.weaver.ast.Or;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
-
-import java.util.ArrayList;
-import java.util.List;
 
 @RestController
 @RequestMapping("/api/orders")
@@ -34,7 +26,7 @@ public class OrderController{
     @PostMapping()
     public ResponseEntity <Order> createOrder(@RequestBody OrderCreateRequest request){
         System.out.println(request.toString());
-        if(request.getItemIds().length<1 || request.getSellerId()==null || request.getDeliverAddressId()==null || request.getPickUpAddressId()==null){
+        if(request.getItemIds().length<1 || request.getSellerId()==null || request.getDeliverAddress()==null || request.getPickupAddress()==null){
             return ResponseEntity.badRequest().body(null);
         }
         Order createdOrder =orderService.create(request);
