@@ -7,7 +7,7 @@ import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.AddressRepository;
 import com.binaklet.binaklet.repositories.OrderRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
-import com.binaklet.binaklet.dto.requests.order.OrderCreateRequest;
+import com.binaklet.binaklet.dto.requests.order.CreateOrderRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
@@ -31,7 +31,7 @@ public class OrderService{
     private final AddressRepository addressRepository;
 
 
-    public ResponseEntity<Order> create (OrderCreateRequest request){
+    public ResponseEntity<Order> create (CreateOrderRequest request){
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
 

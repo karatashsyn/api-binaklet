@@ -43,7 +43,7 @@ public class ItemService{
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
         List<Item> allItems= itemRepository.findAll(itemSpec.applyFilters(request.getSearchKey(), request.getMaxPrice(),request.getMinPrice(),request.getByUserId(),request.getStatus(), request.getCategoryId()));
-        List <BasicItemDTO> allItemsDTOs =allItems.stream().map(item->BasicItemDTO.build(item.getName(),item.getPrice(),"")).toList();
+        List <BasicItemDTO> allItemsDTOs =allItems.stream().map(item->BasicItemDTO.build(item.getId(),item.getStatus(),item.getBrand(),item.getName(),item.getPrice(),"")).toList();
 
         return ResponseEntity.ok(allItemsDTOs);
     }
@@ -54,7 +54,7 @@ public class ItemService{
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
         List<Item> userItems = itemRepository.findAll(itemSpec.applyFilters(request.getSearchKey(), request.getMaxPrice(), request.getMinPrice(), currentUser.get().getId(), request.getStatus(), request.getCategoryId()));
-        List<BasicItemDTO> userItemDTOs = userItems.stream().map(item->BasicItemDTO.build(item.getName(),item.getPrice(),"")).toList();
+        List<BasicItemDTO> userItemDTOs = userItems.stream().map(item->BasicItemDTO.build(item.getId(),item.getStatus(),item.getBrand(),item.getName(),item.getPrice(),"")).toList();
 
         return ResponseEntity.ok(userItemDTOs);
     }
@@ -81,7 +81,7 @@ public class ItemService{
 
         // TODO: Category should exist validation either apply here or with validation annotations.
         Category category = categoryService.getById(categoryId);
-        if(category==null){
+        if( category==null){
             throw new ApiRequestException("Böyle bir kategori bulunmamaktadir.");
         }
 

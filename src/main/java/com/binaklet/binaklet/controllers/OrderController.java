@@ -1,7 +1,7 @@
 package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.entities.*;
-import com.binaklet.binaklet.dto.requests.order.OrderCreateRequest;
+import com.binaklet.binaklet.dto.requests.order.CreateOrderRequest;
 import com.binaklet.binaklet.services.*;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -24,7 +24,7 @@ public class OrderController{
     }
 
     @PostMapping()
-    public ResponseEntity<Order> createOrder(@Valid @RequestBody OrderCreateRequest request){
+    public ResponseEntity<Order> createOrder(@Valid @RequestBody CreateOrderRequest request){
         return orderService.create(request);
 
     }

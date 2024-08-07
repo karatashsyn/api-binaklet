@@ -31,12 +31,12 @@ import org.slf4j.LoggerFactory;
 @Validated
 public class ItemController {
     private final ItemService itemService;
-    private final CategoryService categoryService;
+
     private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
 
 
     @GetMapping
-    public ResponseEntity<List<BasicItemDTO>> getItems(@RequestBody SearchItemRequest request)
+    public ResponseEntity<List<BasicItemDTO>> getItems(@ModelAttribute SearchItemRequest request)
     {
         return itemService.getAll(request);
     }

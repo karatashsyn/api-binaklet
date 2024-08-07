@@ -1,5 +1,6 @@
 package com.binaklet.binaklet.dto.responses.item;
 
+import com.binaklet.binaklet.enums.ItemStatus;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -12,6 +13,11 @@ import java.util.List;
 @Data
 @Builder
 public class BasicItemDTO {
+
+
+    Long id;
+    ItemStatus status;
+    String brand;
     String name;
     Float price;
     String banner;
