@@ -1,8 +1,12 @@
 package com.binaklet.binaklet.services;
-import com.binaklet.binaklet.DTOs.BasicUserDto;
-import dto.responses.item.ItemDetailDTO;
+import com.binaklet.binaklet.dto.requests.item.MyItemsRequest;
+import com.binaklet.binaklet.dto.requests.item.SearchItemRequest;
+import com.binaklet.binaklet.dto.responses.item.BasicItemDTO;
+import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
+import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
-import dto.requests.item.CreateItemRequest;
+import com.binaklet.binaklet.dto.requests.item.CreateItemRequest;
+import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.ItemStatus;
@@ -29,29 +33,36 @@ public class ItemService{
     private  final UserRepository userRepository;
     private final ImageRepository imageRepository;
     private final FileService fileService;
-    private final ItemTypeService itemTypeService;
+    private final CategoryService categoryService;
 
 
 
-    public List<Item> getAll(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus,Long typeId){
+    public ResponseEntity<List<BasicItemDTO>> getAll(SearchItemRequest request){
+
+        //TODO replace "" with item.getImages().get(0).getUrl()
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
-        List<Item> allItems= itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,userId, itemStatus,typeId));
-        return allItems.stream().filter(item -> !item.getUser().getId().equals(currentUser.get().getId())).collect(Collectors.toList());
+        List<Item> allItems= itemRepository.findAll(itemSpec.applyFilters(request.getSearchKey(), request.getMaxPrice(),request.getMinPrice(),request.getByUserId(),request.getStatus(), request.getCategoryId()));
+        List <BasicItemDTO> allItemsDTOs =allItems.stream().map(item->BasicItemDTO.build(item.getName(),item.getPrice(),"")).toList();
+
+        return ResponseEntity.ok(allItemsDTOs);
     }
 
-    public List<Item> getMyItems(String searchKey, Integer maxPrice, Integer minPrice, ItemStatus itemStatus,Long typeId){
+    //TODO replace "" with item.getImages().get(0).getUrl()
+    public ResponseEntity<List<BasicItemDTO>> getMyItems(MyItemsRequest request){
+
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
-//        return itemRepository.findAll().stream().filter(item -> item.getUser().getId().equals(currentUser.get().getId())).collect(Collectors.toList())
-        return itemRepository.findAll(itemSpec.applyFilters(searchKey,maxPrice,minPrice,currentUser.get().getId(),itemStatus,typeId));
+        List<Item> userItems = itemRepository.findAll(itemSpec.applyFilters(request.getSearchKey(), request.getMaxPrice(), request.getMinPrice(), currentUser.get().getId(), request.getStatus(), request.getCategoryId()));
+        List<BasicItemDTO> userItemDTOs = userItems.stream().map(item->BasicItemDTO.build(item.getName(),item.getPrice(),"")).toList();
+
+        return ResponseEntity.ok(userItemDTOs);
     }
 
 
 
-    public Item create (@ModelAttribute CreateItemRequest payload) throws Exception{
+    public ResponseEntity<Item> create (@ModelAttribute CreateItemRequest payload){
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-
 
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
 
@@ -69,17 +80,20 @@ public class ItemService{
         String brand = payload.getBrand();
 
         // TODO: Category should exist validation either apply here or with validation annotations.
-        Category category = itemTypeService.getById(categoryId);
-
+        Category category = categoryService.getById(categoryId);
+        if(category==null){
+            throw new ApiRequestException("Böyle bir kategori bulunmamaktadir.");
+        }
 
 
 
         Item itemToCreate=  new Item();
         itemToCreate.setName(name);
         itemToCreate.setUser(currentUser.get());
-        itemToCreate.setItemType(category);
+        itemToCreate.setCategory(category);
         itemToCreate.setDescription(description);
         itemToCreate.setPrice(price);
+        itemToCreate.setDepth(depth);
         itemToCreate.setHeight(height);
         itemToCreate.setWidth(width);
 
@@ -109,17 +123,20 @@ public class ItemService{
 
         savedItem.setImages(imagesToSave);
 
-        return savedItem;
+        return ResponseEntity.ok(savedItem);
     }
-    public ItemDetailDTO getById(Long id){
+    public ResponseEntity<ItemDetailDTO> getById(Long id){
         Optional<Item> foundItem = itemRepository.findById(id);
         if(foundItem.isEmpty()){throw new ApiRequestException("Ürün bulunamadı.");}
         Item item = foundItem.get();
         User owner = item.getUser();
         BasicUserDto ownerDto = BasicUserDto.builder().email(owner.getEmail()).addresses(owner.getAddresses().stream().map(address -> address.getAddressText()).collect((Collectors.toList()))).name(owner.getName()).id(owner.getId()).build();
-        return ItemDetailDTO.builder().name(item.getName()).id(item.getId()).mass(item.getMass()).brand(item.getBrand()
-        ).price(item.getPrice()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getItemType()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()
+
+        ItemDetailDTO itemDetail =  ItemDetailDTO.builder().name(item.getName()).id(item.getId()).mass(item.getMass()).brand(item.getBrand()
+        ).price(item.getPrice()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getCategory()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()
         ).build();
+
+        return ResponseEntity.ok(itemDetail);
 
     }
 
@@ -136,12 +153,14 @@ public class ItemService{
     }
 
 
-    public void delete(Long itemId) {
+    public ResponseEntity<ItemDetailDTO> delete(Long itemId) {
         Optional<Item> itemToBeDeleted = itemRepository.findById(itemId);
         if(itemToBeDeleted.isEmpty()){throw new ApiRequestException("Ürün bulunamadı");}
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
         if(! itemToBeDeleted.get().getUser().equals(currentUser.get())){throw new ApiRequestException("Bu ürünü silemezsiniz");}
         itemRepository.delete(itemToBeDeleted.get());
+
+        return ResponseEntity.ok(null);
     }
 }

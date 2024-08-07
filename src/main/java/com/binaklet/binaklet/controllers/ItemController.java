@@ -1,11 +1,15 @@
 package com.binaklet.binaklet.controllers;
 
-import dto.responses.item.ItemDetailDTO;
+import com.binaklet.binaklet.dto.requests.item.MyItemsRequest;
+import com.binaklet.binaklet.dto.requests.item.SearchItemRequest;
+import com.binaklet.binaklet.dto.responses.item.BasicItemDTO;
+import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
-import dto.requests.item.CreateItemRequest;
+import com.binaklet.binaklet.dto.requests.item.CreateItemRequest;
 import com.binaklet.binaklet.services.*;
+import jakarta.annotation.Nullable;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.log4j.Log4j2;
@@ -27,80 +31,40 @@ import org.slf4j.LoggerFactory;
 @Validated
 public class ItemController {
     private final ItemService itemService;
-    private final ItemTypeService itemTypeService;
+    private final CategoryService categoryService;
     private static final Logger logger = LoggerFactory.getLogger(ItemController.class);
+
+
     @GetMapping
-    public List<Item> getItems(@RequestParam(value = "searchKey",required = false) String searchKey,
-                               @RequestParam(value = "max",required = false) Integer maxPrice,
-                               @RequestParam(value = "min",required = false) Integer minPrice,
-                               @RequestParam(value = "byUser",required = false) Long userId ,
-                               @RequestParam(value = "status",required = false) ItemStatus status ,
-                               @RequestParam(value = "type",required = false) Long typeId )
+    public ResponseEntity<List<BasicItemDTO>> getItems(@RequestBody SearchItemRequest request)
     {
-        System.out.println("SEARCH ITEMS runned");
-        return itemService.getAll(searchKey,maxPrice,minPrice,userId,status,typeId);
+        return itemService.getAll(request);
     }
 
 
-    //TODO: SecurityFilterde itemsin hepsine izin verme, getMyItemsi falan sil
     @GetMapping("/me")
-    public List<Item> getMyItems(@RequestParam(value = "searchKey",required = false) String searchKey,
-                               @RequestParam(value = "max",required = false) Integer maxPrice,
-                               @RequestParam(value = "min",required = false) Integer minPrice,
-                               @RequestParam(value = "status",required = false) ItemStatus status ,
-                               @RequestParam(value = "type",required = false) Long typeId )
+    public ResponseEntity<List<BasicItemDTO>> getMyItems(@ModelAttribute MyItemsRequest request )
     {
-        logger.info("GET MY ITEMS");
-        return itemService.getMyItems(searchKey,maxPrice,minPrice,status,typeId);
+        return itemService.getMyItems(request);
     }
 
     @PostMapping(consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    public ResponseEntity<Item> createItem(
-            @Valid @RequestBody CreateItemRequest request
-            ) throws IOException,Exception {
-
-        return ResponseEntity.ok().body(itemService.create(request));
-
-
+    public ResponseEntity<Item> createItem(@Valid @ModelAttribute CreateItemRequest request) {
+        return itemService.create(request);
     }
 
 
     @GetMapping({"/{itemId}"})
 
-    public ItemDetailDTO getItem(@PathVariable String itemId){
-        try {
-            Long id = Long.parseLong(itemId.trim());
-            return itemService.getById(id);
-        }
-        catch(NumberFormatException  e) {
-            throw new ApiRequestException("Lütfen geçerli bir ürün kimliği giriniz");
-        }
-        catch (Exception e){
-            throw e;
-        }
+    public ResponseEntity<ItemDetailDTO> getItem(@PathVariable Long itemId){
+            return itemService.getById(itemId);
+
     }
 
 
-    @PostMapping({"/deleteItem"})
-    public void deleteItem(Long itemId){
-        try {
-            Long id = Long.parseLong(itemId.toString().trim());
-            ItemDetailDTO itemToBeDeleted = itemService.getById(id);
-            if(itemToBeDeleted==null){
-                throw new ApiRequestException("Ürün bulunamadı.");
-            }
-            else{itemService.delete(id);}
-        }
-        catch(NumberFormatException  e) {
-            throw new ApiRequestException("Lütfen geçerli bir ürün kimliği giriniz");
-        }
-        catch (Exception e){
-            throw e;
-        }
+    @PostMapping({"/delete"})
+    public ResponseEntity<ItemDetailDTO> deleteItem(Long itemId){
+        return itemService.delete(itemId);
     }
 
-//    @PostMapping({"/{itemId}"})
-//    public Item updateitem(@PathVariable Long itemId, @RequestBody Item newItem){
-//        return itemService.update(itemId,newItem);
-//    }
-}
+    }

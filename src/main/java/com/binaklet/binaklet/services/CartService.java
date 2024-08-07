@@ -1,8 +1,10 @@
 package com.binaklet.binaklet.services;
 
-import com.binaklet.binaklet.DTOs.BasicUserDto;
-import com.binaklet.binaklet.DTOs.CartDto;
-import dto.responses.item.ItemDetailDTO;
+import com.binaklet.binaklet.dto.requests.cart.AddToCartRequest;
+import com.binaklet.binaklet.dto.requests.cart.RemoveItemFromCart;
+import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
+import com.binaklet.binaklet.dto.responses.cart.CartDto;
+import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.User;
@@ -11,6 +13,7 @@ import com.binaklet.binaklet.repositories.CartRepository;
 import com.binaklet.binaklet.repositories.ItemRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -32,11 +35,11 @@ public class CartService {
         cart.setItems(emptyItems);
         return cartRepo.save(cart);
     }
-    public Cart addItemsToMyCart(List<Long> itemIds){
-        try {
+    public ResponseEntity<Cart> addItemsToMyCart(AddToCartRequest request) {
             String email =  SecurityContextHolder.getContext().getAuthentication().getName();
             User currentUser = userRepo.findByEmail(email).orElse(null);
             assert currentUser != null;
+            List<Long> itemIds = request.getItemIds();
             Cart cartOfTheUser = currentUser.getCart();
             List<Item> itemsOfCart = cartOfTheUser.getItems();
             List<Item> itemsToAdd = itemRepo.findAllById(itemIds);
@@ -51,16 +54,14 @@ public class CartService {
             //If successful, add all items to current cart content
             itemsOfCart.addAll(itemsToAdd);
             cartOfTheUser.setItems(itemsOfCart);
-            return cartRepo.save(cartOfTheUser);
-        }
-        catch (Exception e){
-            throw new ApiRequestException(e.getMessage());
-        }
+            Cart updatedCart = cartRepo.save(cartOfTheUser);
+            return ResponseEntity.ok(updatedCart);
+
 
     }
 
-    public Cart removeItemFromMyCart(Long itemId){
-        try {
+    public ResponseEntity<Cart> removeItemFromMyCart(RemoveItemFromCart request){
+            Long itemId = request.getItemId();
             String email =  SecurityContextHolder.getContext().getAuthentication().getName();
             User currentUser = userRepo.findByEmail(email).orElse(null);
             assert currentUser != null;
@@ -74,13 +75,11 @@ public class CartService {
             Optional<Item> itemToRemove = itemsOfCart.stream().filter(item->item.getId().equals(itemId)).findFirst();
             if(itemToRemove.isEmpty()){throw new ApiRequestException("Ürün bulunamadı");}
             itemsOfCart.remove(itemToRemove.get());
-            //If successful, add all items to current cart content
+
             cartOfTheUser.setItems(itemsOfCart);
-            return cartRepo.save(cartOfTheUser);
-        }
-        catch (Exception e){
-            throw new ApiRequestException(e.getMessage());
-        }
+            Cart updatedCart =cartRepo.save(cartOfTheUser);
+            return ResponseEntity.ok(updatedCart);
+
 
     }
 
@@ -88,6 +87,13 @@ public class CartService {
     public void clearUserCart(Long userId){
         User user = userRepo.findById(userId).orElse(null);
         if(user==null){throw new ApiRequestException("Kullanıcı bulunamadı");}
+        Cart cartOfTheUser = user.getCart();
+
+        List<Item> itemsOfCart = cartOfTheUser.getItems();
+
+        if(itemsOfCart.isEmpty()){
+            throw new ApiRequestException("Sepet zaten boş");
+        }
         Cart cart = user.getCart();
         cart.setItems(Collections.emptyList());
         cartRepo.save(cart);
@@ -95,11 +101,8 @@ public class CartService {
 
 
 
-//    public List<Cart> getAll(){
-//        return cartRepo.findAll();
-//    }
 
-    public CartDto getMyCart(){
+    public ResponseEntity<CartDto> getMyCart(){
         String email =  SecurityContextHolder.getContext().getAuthentication().getName();
         Cart currentUserCart = userRepo.findByEmail(email).orElse(null).getCart();
         List<Item> cartItems = currentUserCart.getItems();
@@ -107,11 +110,12 @@ public class CartService {
         for (Item item : cartItems) {
             User ownerOfItem = item.getUser();
             BasicUserDto itemUser = BasicUserDto.builder().id(ownerOfItem.getId()).email(ownerOfItem.getEmail()).name(ownerOfItem.getName()).addresses(ownerOfItem.getAddresses().stream().map(adrs -> adrs.getAddressText()).collect(Collectors.toList())).build();
-            ItemDetailDTO itemDetail = ItemDetailDTO.builder().id(item.getId()).name(item.getName()).price(item.getPrice()).mass(item.getMass()).brand(item.getBrand()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getItemType()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()).build();
+            ItemDetailDTO itemDetail = ItemDetailDTO.builder().id(item.getId()).name(item.getName()).price(item.getPrice()).mass(item.getMass()).brand(item.getBrand()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getCategory()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()).build();
             detailedCartItems.add(itemDetail);
         }
+        CartDto userCart = CartDto.builder().id(currentUserCart.getId()).items(detailedCartItems).build();
 
-        return CartDto.builder().id(currentUserCart.getId()).items(detailedCartItems).build();
+        return ResponseEntity.ok(userCart);
 
     }
 }

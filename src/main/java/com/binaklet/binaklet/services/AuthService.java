@@ -1,7 +1,7 @@
 package com.binaklet.binaklet.services;
 
 
-import com.binaklet.binaklet.DTOs.CartDto;
+import com.binaklet.binaklet.dto.responses.cart.CartDto;
 import com.binaklet.binaklet.config.JwtService;
 import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.Cart;
@@ -10,13 +10,15 @@ import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.enums.UserRole;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.UserRepository;
-import dto.requests.auth.LoginRequest;
-import dto.requests.auth.RegisterRequest;
-import com.binaklet.binaklet.responses.AuthenticationResponse;
-import dto.responses.address.AddressDetailDTO;
-import dto.responses.item.ItemDetailDTO;
-import dto.responses.user.MeDTO;
+import com.binaklet.binaklet.dto.requests.auth.LoginRequest;
+import com.binaklet.binaklet.dto.requests.auth.RegisterRequest;
+import com.binaklet.binaklet.dto.responses.AuthenticationResponse;
+import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
+import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
+import com.binaklet.binaklet.dto.responses.auth.MeDTO;
 import lombok.RequiredArgsConstructor;
+import org.apache.coyote.Response;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.AuthenticationException;
@@ -26,7 +28,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -38,7 +39,7 @@ public class AuthService {
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
 
-    public AuthenticationResponse register(RegisterRequest request) {
+    public ResponseEntity<AuthenticationResponse> register(RegisterRequest request) {
         Optional<User> checkedUser = userRepository.findByEmail(request.getEmail());
         if( checkedUser.isPresent() ){
             throw new ApiRequestException("Bu email kullanılmakta.");
@@ -52,14 +53,15 @@ public class AuthService {
                     .build();
             User createdUser = userService.createUserWithEmptyCard(user);
             var token = jwtService.generateToken(user);
-            return AuthenticationResponse.builder()
+            AuthenticationResponse response = AuthenticationResponse.builder()
                     .token(token).user(createdUser)
                     .build();
+            return ResponseEntity.ok(response);
         }
 
     }
 
-    public MeDTO getMe(){
+    public ResponseEntity<MeDTO> getMe(){
         User currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).get();
         List<Address> userAddresses = currentUser.getAddresses();
         List<AddressDetailDTO> addressDetailDTOs = userAddresses.stream()
@@ -68,23 +70,24 @@ public class AuthService {
 
         List<Item> userItems = currentUser.getItems();
         List<ItemDetailDTO> itemDetailDTOs =  userItems.stream().map(item->
-            ItemDetailDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getItemType())).toList();
+            ItemDetailDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory())).toList();
 
         Cart userCart = currentUser.getCart();
         CartDto userCartDto = CartDto.build(userCart.getId(),itemDetailDTOs);
 
-        return MeDTO.build(currentUser.getId(),currentUser.getRole(),
+        MeDTO response =  MeDTO.build(currentUser.getId(),currentUser.getRole(),
                 currentUser.getName(),currentUser.getEmail(),currentUser.getPhoneNumber(),addressDetailDTOs,userCartDto, itemDetailDTOs,currentUser.getCreatedDate());
 
-
+        return ResponseEntity.ok(response);
     }
 
-    public AuthenticationResponse login(LoginRequest request) {
+    public ResponseEntity<AuthenticationResponse> login(LoginRequest request) {
         try{
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
             var foundUser = userRepository.findByEmail(request.getEmail()).orElseThrow();
             var token = jwtService.generateToken(foundUser);
-            return AuthenticationResponse.builder().token(token).user(foundUser).build();
+            AuthenticationResponse response =  AuthenticationResponse.builder().token(token).user(foundUser).build();
+            return ResponseEntity.ok(response);
         }
         catch (AuthenticationException e){
             return null;

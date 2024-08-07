@@ -1,12 +1,11 @@
 package com.binaklet.binaklet.controllers;
 
 import com.binaklet.binaklet.entities.Address;
-import com.binaklet.binaklet.repositories.UserRepository;
-import dto.requests.address.CreateAddressRequest;
+import com.binaklet.binaklet.dto.requests.address.CreateAddressRequest;
 import com.binaklet.binaklet.services.AddressService;
-import com.binaklet.binaklet.services.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,18 +22,19 @@ public class AddressController {
 
 
     @GetMapping
-    public List<Address> getMyAddresses(){
+    public ResponseEntity<List<Address>> getMyAddresses(){
         return addressService.getCurrentUserAddresses();
     }
 
     @PostMapping()
-    public Address createAddress(@RequestBody @Valid CreateAddressRequest request){
+    public ResponseEntity<Address> createAddress(@RequestBody @Valid CreateAddressRequest request){
         return addressService.create(request);
     }
 
     @GetMapping({"/{addressId}"})
-    public Address getAddress(@PathVariable Long addressId){
+    public ResponseEntity<Address> getAddress(@PathVariable Long addressId){
         return addressService.getById(addressId);
+
     }
 
 }

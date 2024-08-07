@@ -20,14 +20,13 @@ public class UserController {
 
     @GetMapping
     public ResponseEntity<List<User>> getUsers() {
-        List<User> users = userService.getAll();
-        return ResponseEntity.ok().body(users);
+        return userService.getAll();
     }
 
 
     @GetMapping({"/{userId}"})
-    public User getUser(@PathVariable Long userId) {
-        return userService.getById(userId);
+    public ResponseEntity<User> getUser(@PathVariable Long userId) {
+        return ResponseEntity.ok(userService.getById(userId));
     }
 }
 

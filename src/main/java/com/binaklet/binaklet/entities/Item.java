@@ -4,6 +4,9 @@ import com.binaklet.binaklet.enums.ItemStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.persistence.*;
+import jakarta.validation.constraints.NotBlank;
+import jakarta.validation.constraints.NotEmpty;
+import jakarta.validation.constraints.NotNull;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
@@ -19,16 +22,19 @@ public class Item {
     Long id;
 
 
+    @NotBlank
     String name;
 
 
-
+    @NotNull
     Float price;
 
+    @NotNull
     Float mass;
 
-
+    @NotNull
     String brand;
+
 
     ItemStatus status;
 
@@ -57,16 +63,20 @@ public class Item {
     List<Tag> tags;
 
     @ManyToOne(fetch = FetchType.EAGER) //DONE
-    @JoinColumn(name = "item_type_id")
-    Category itemType;
+    @JoinColumn(name = "category_id")
+    Category category;
 
 
-    Float height;
 
+    @NotNull
     Float width;
 
-    Float depth;
+    @NotNull
+    Float height;
 
+
+    @NotNull
+    Float depth;
 
 
     @PrePersist

@@ -4,7 +4,7 @@ import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.Category;
 import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.enums.ItemStatus;
-import com.binaklet.binaklet.services.ItemTypeService;
+import com.binaklet.binaklet.services.CategoryService;
 import com.binaklet.binaklet.services.UserService;
 import lombok.RequiredArgsConstructor;
 import org.springframework.data.jpa.domain.Specification;
@@ -14,7 +14,7 @@ import org.springframework.stereotype.Component;
 @RequiredArgsConstructor
 public class ItemSpesification {
 
-    private final ItemTypeService itemTypeService;
+    private final CategoryService categoryService;
     private final UserService userService;
     public Specification<Item> status(ItemStatus status){
         return (root,query,cb)->
@@ -22,7 +22,7 @@ public class ItemSpesification {
     }
 
     public Specification<Item>nameLike(String searchKey){
-        return (root,query,cb)->cb.like(root.get("name"), "%"+searchKey.toLowerCase()+"%");
+        return (root,query,cb)->cb.like(root.get("name"), "%" + searchKey.toLowerCase()+"%");
     }
 
     public Specification<Item> maxPrice(int max){
@@ -33,11 +33,11 @@ public class ItemSpesification {
         return (root,query,cb)->
                 cb.greaterThanOrEqualTo(root.get("price"),  min);
     }
-    public Specification<Item> byType(Long typeId){
-        Category itemType = itemTypeService.getById(typeId);
-        if(itemType!=null){
+    public Specification<Item> byCategory(Long categoryId){
+        Category category = categoryService.getById(categoryId);
+        if(category!=null){
             return (root,query,cb)->
-                    cb.equal(root.get("itemType"),itemType);
+                    cb.equal(root.get("category"),category);
 
         }
         else{
@@ -52,7 +52,7 @@ public class ItemSpesification {
     }
 
 
-    public Specification<Item> applyFilters(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus, Long itemTypeId){
+    public Specification<Item> applyFilters(String searchKey, Integer maxPrice, Integer minPrice, Long userId, ItemStatus itemStatus, Long categoryId){
         Specification<Item> spec = null;
         if(searchKey!=null && !searchKey.isBlank()){
             spec=nameLike(searchKey);
@@ -72,8 +72,8 @@ public class ItemSpesification {
         if(itemStatus!=null){
             spec = spec.and(status(itemStatus));
         }
-        if(itemTypeId!=null){
-            spec=spec.and(byType(itemTypeId));
+        if(categoryId!=null){
+            spec=spec.and(byCategory(categoryId));
         }
 
         return spec;

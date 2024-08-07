@@ -2,6 +2,7 @@ package com.binaklet.binaklet.services;
 
 import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.entities.Item;
+import com.binaklet.binaklet.enums.UserStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.CartRepository;
 import com.binaklet.binaklet.repositories.OrderRepository;
@@ -11,6 +12,7 @@ import lombok.RequiredArgsConstructor;
 import org.checkerframework.checker.units.qual.C;
 import org.springframework.beans.BeanUtils;
 import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -31,16 +33,20 @@ public class UserService{
     }
 
     public User getById(Long id){
-        return userRepo.findById(id).orElse(null);
+        User foundUser  = userRepo.findById(id).orElse(null);
+        if(foundUser==null || foundUser.getStatus() == UserStatus.DELETED) throw new ApiRequestException("Kullanıcı Bulunamadı");
+
+        return foundUser;
     }
 
-    public List<User> getAll(){
-        return userRepo.findAll();
+    public ResponseEntity<List<User>> getAll()
+    {
+        return ResponseEntity.ok(userRepo.findAll());
     }
 
-    public User getMe(){
+    public ResponseEntity<User> getMe(){
         Optional<User> currentUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
-        return currentUser.get();
+        return ResponseEntity.ok(currentUser.get());
     }
 }

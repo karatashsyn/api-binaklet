@@ -2,6 +2,7 @@ package com.binaklet.binaklet.entities;
 
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.enums.UserRole;
+import com.binaklet.binaklet.enums.UserStatus;
 import com.binaklet.binaklet.repositories.CartRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
@@ -44,7 +45,6 @@ public class User implements UserDetails {
     @NotNull
     String name;
 
-
     @Email
     @NotNull
     @Unique
@@ -65,11 +65,21 @@ public class User implements UserDetails {
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
     List<Item> items;
 
+    @JsonIgnore
+    @OneToMany(mappedBy = "buyer", fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
+    List<Order> orders;
+
+    @JsonIgnore
+    @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER)
+    List<Order> disposals;
+
 
     @JsonIgnore
     @OneToOne
     @JoinColumn(name = "cart_id")
     Cart cart;
+
+    UserStatus status;
 
 
     @JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss.SSSZ", timezone = "UTC")
@@ -78,6 +88,7 @@ public class User implements UserDetails {
     @PrePersist
     protected void onCreate()
     {
+        status=UserStatus.ACTIVE;
         createdDate=new Date();
     }
 

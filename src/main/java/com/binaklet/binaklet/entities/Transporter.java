@@ -22,15 +22,19 @@ public class Transporter {
     Long id;
 
     @NotNull
-    String firstName;
-    String lastName;
+    String name;
 
-    @OneToMany(mappedBy = "transporter")
-    List<UserComment> comments;
+//    @OneToMany(mappedBy = "transporter")
+//    List<UserComment> comments;
 
+    @NotNull
     Float volumeCapacity;
+
+    @NotNull
     Float massCapacity;
-    Float occupiedCapacity; //For volume
+
+    @NotNull
+    Float occupiedCapacity;
 
     @Email
     @NotNull

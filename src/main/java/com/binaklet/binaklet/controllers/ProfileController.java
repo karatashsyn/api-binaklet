@@ -19,7 +19,7 @@ public class ProfileController {
 
     @GetMapping
     public ResponseEntity<User> getMe() {
-        return ResponseEntity.ok().body(userService.getMe());
+        return userService.getMe();
     }
 
 }

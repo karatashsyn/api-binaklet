@@ -5,9 +5,10 @@ import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.AddressRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
-import dto.requests.address.CreateAddressRequest;
+import com.binaklet.binaklet.dto.requests.address.CreateAddressRequest;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -20,29 +21,29 @@ import java.util.Optional;
 public class AddressService{
     private final AddressRepository addressRepository;
     private final UserRepository userRepository;
-    public Address create(@RequestBody @Valid CreateAddressRequest request) {
+    public ResponseEntity<Address> create(@RequestBody @Valid CreateAddressRequest request) {
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         Address addressToSave = new Address();
-
         addressToSave.setUser(currentUser.get());
         addressToSave.setAddressTitle(request.getAddressTitle());
         addressToSave.setAddressText(request.getAddressText());
         addressToSave.setContactPhone(request.getContactPhone());
-
-        return addressRepository.save(addressToSave);
+        Address newAddress = addressRepository.save(addressToSave);
+        return ResponseEntity.ok(newAddress);
     }
 
-    public Address getById(Long addressId) {
+    public ResponseEntity<Address> getById(Long addressId) {
         Optional<Address> foundAddress = addressRepository.findById(addressId);
-        if(foundAddress.isEmpty()){throw new ApiRequestException("Address bulunamadı");}
-        return foundAddress.get();
+        if(foundAddress.isEmpty()){throw new ApiRequestException("Address bulunamadı.");}
+
+        return ResponseEntity.ok(foundAddress.get());
     }
 
 
-    public List<Address> getCurrentUserAddresses() {
+    public ResponseEntity<List<Address>> getCurrentUserAddresses() {
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         List<Address> foundAddresses = addressRepository.findByUser(currentUser.get());
-        if(foundAddresses.isEmpty()){throw new ApiRequestException("Address bulunamadı");}
-        return foundAddresses;
+        if(foundAddresses.isEmpty()){throw new ApiRequestException("Address bulunamadı.");}
+        return ResponseEntity.ok(foundAddresses);
     }
 }

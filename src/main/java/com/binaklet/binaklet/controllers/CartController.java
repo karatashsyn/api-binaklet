@@ -1,12 +1,14 @@
 package com.binaklet.binaklet.controllers;
-import com.binaklet.binaklet.DTOs.CartDto;
+import com.binaklet.binaklet.dto.responses.cart.CartDto;
 import com.binaklet.binaklet.entities.Cart;
-import dto.requests.cart.AddToCartRequest;
-import dto.requests.cart.RemoveItemFromCart;
+import com.binaklet.binaklet.dto.requests.cart.AddToCartRequest;
+import com.binaklet.binaklet.dto.requests.cart.RemoveItemFromCart;
 import com.binaklet.binaklet.services.CartService;
+import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
+import org.springframework.validation.annotation.Validated;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -14,27 +16,23 @@ import java.util.List;
 @RestController
 @RequestMapping(value = "/api/carts")
 @RequiredArgsConstructor
+@Validated
 public class CartController {
     private final CartService cartService;
     @PostMapping(value = {"/addItemToMyCart"},consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Cart> addItemToMyCart(@RequestBody AddToCartRequest request){
-        List<Long> itemIds = request.getItemIds();
-        Cart updatedCart = cartService.addItemsToMyCart(itemIds);
-        return ResponseEntity.ok().body(updatedCart);
+    ResponseEntity<Cart> addItemToMyCart( @Valid @RequestBody AddToCartRequest request){
+        return cartService.addItemsToMyCart(request);
     }
 
     @PostMapping(value = {"/removeItemFromCart"})
-    ResponseEntity<Cart> removeItemFromCart(@RequestBody RemoveItemFromCart request){
-        Long itemId = request.getItemId();
-        Cart updatedCart = cartService.removeItemFromMyCart(itemId);
-        return ResponseEntity.ok().body(updatedCart);
+    ResponseEntity<Cart> removeItemFromCart(@Valid @RequestBody RemoveItemFromCart request){
+        return cartService.removeItemFromMyCart(request);
     }
 
 
     @GetMapping({"/getMyCart"} )
-    ResponseEntity<CartDto> addItemToMyCart(){
-        CartDto userCart = cartService.getMyCart();
-        return ResponseEntity.ok().body(userCart);
+    ResponseEntity<CartDto> getMyCart(){
+        return cartService.getMyCart();
     }
 
 }

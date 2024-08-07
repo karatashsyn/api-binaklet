@@ -4,10 +4,12 @@ import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.enums.OrderStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
+import com.binaklet.binaklet.repositories.AddressRepository;
 import com.binaklet.binaklet.repositories.OrderRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
-import dto.requests.order.OrderCreateRequest;
+import com.binaklet.binaklet.dto.requests.order.OrderCreateRequest;
 import lombok.RequiredArgsConstructor;
+import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
@@ -26,18 +28,22 @@ public class OrderService{
     private final UserRepository userRepository;
     private final OrderRepository orderRepository;
     private final CartService cartService;
+    private final AddressRepository addressRepository;
 
 
-    public Order create (OrderCreateRequest request){
+    public ResponseEntity<Order> create (OrderCreateRequest request){
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili Kullanıcı Bulunamadı");}
-        String pickUpAddress =request.getPickupAddress();
-        String deliverAddress =request.getDeliverAddress();
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
 
-        Long[] itemsId = request.getItemIds();
+        Optional<Address> pickUpAddress =addressRepository.findById(request.getPickupAddressId());
+        Optional<Address> deliverAddress =addressRepository.findById(request.getDeliverAddressId());
+
+        if(deliverAddress.isEmpty()) throw new ApiRequestException("Varış adresi sistemde bulunmamaktadır.");
+        if(pickUpAddress.isEmpty()) throw new ApiRequestException("Çıkış adresi sistemde bulunmamaktadır.");
+
 
         List<Item> orderItems = new ArrayList<>();
-        for (Long id :itemsId
+        for (Long id :request.getItemIds()
         ) {
             Item foundItem = itemService.get(id);
 
@@ -52,14 +58,12 @@ public class OrderService{
         User seller = userService.getById(request.getSellerId());
         if(orderItems.isEmpty()){throw new ApiRequestException("Sipariş en az bir ürün içermeli");}
         if(seller==null){throw new ApiRequestException("Satıcı bulunamadı");}
-        if(pickUpAddress==null){throw new ApiRequestException("Alış adresi bulunamadı");}
-        if(deliverAddress==null){throw new ApiRequestException("Teslim adresi bulunamadı");}
         Order orderToCreate = new Order();
         orderToCreate.setBuyer(currentUser.get());
         orderToCreate.setSeller(seller);
         orderToCreate.setItems(orderItems);
-        orderToCreate.setDeliverAddress(deliverAddress);
-        orderToCreate.setPickUpAddress(pickUpAddress);
+        orderToCreate.setDeliverAddress(deliverAddress.get());
+        orderToCreate.setPickUpAddress(pickUpAddress.get());
         orderToCreate.setStatus(OrderStatus.CREATED);
         Order savedOrder =  orderRepository.save(orderToCreate);
         for (Item item :orderItems) {
@@ -67,7 +71,14 @@ public class OrderService{
             itemService.assignToOrder(item,savedOrder);
         }
         cartService.clearUserCart( currentUser.get().getId());
-        return savedOrder;
+        return ResponseEntity.ok(savedOrder);
+    }
+
+    public ResponseEntity<List<Order>> getMyOrders(){
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili Kullanıcı Bulunamadı");}
+        return ResponseEntity.ok( currentUser.get().getOrders());
+
     }
 
 }

@@ -1,12 +1,11 @@
 package com.binaklet.binaklet.controllers;
 
 
-import dto.requests.auth.LoginRequest;
-import dto.requests.auth.RegisterRequest;
-import com.binaklet.binaklet.responses.AuthenticationResponse;
+import com.binaklet.binaklet.dto.requests.auth.LoginRequest;
+import com.binaklet.binaklet.dto.requests.auth.RegisterRequest;
+import com.binaklet.binaklet.dto.responses.AuthenticationResponse;
 import com.binaklet.binaklet.services.AuthService;
-import dto.responses.user.MeDTO;
-import dto.responses.user.UserDetailDTO;
+import com.binaklet.binaklet.dto.responses.auth.MeDTO;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -22,28 +21,16 @@ public class AuthController {
     private final AuthService authService;
     @PostMapping("/register")
     public ResponseEntity<AuthenticationResponse> register(@RequestBody @Valid RegisterRequest request){
-        AuthenticationResponse response = authService.register(request);
-        if(response!=null && response.getToken()!=null){
-            return ResponseEntity.ok(response);
-        }
-        else{
-            return ResponseEntity.status(403).body(response);
-        }
+        return authService.register(request);
     }
 
     @GetMapping("/me")
     public ResponseEntity<MeDTO> getMe(){
-        return ResponseEntity.status(200).body(authService.getMe()) ;
+        return authService.getMe();
     }
 
     @PostMapping("/login")
     public ResponseEntity<AuthenticationResponse> login(@RequestBody @Valid LoginRequest request){
-        AuthenticationResponse response = authService.login(request);
-        if(response!=null&& response.getToken()!=null && !response.getToken().isBlank()){
-            return ResponseEntity.ok(authService.login(request));
-        }
-        else{
-            return ResponseEntity.status(403).body(null);
-        }
+        return authService.login(request);
     }
 }
