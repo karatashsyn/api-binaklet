@@ -1,17 +1,11 @@
 package com.binaklet.binaklet.entities;
 
 
-import com.binaklet.binaklet.services.UserService;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
-import org.springframework.data.annotation.CreatedDate;
 
 import jakarta.persistence.*;
-import java.time.OffsetDateTime;
-import java.util.List;
 
 
 @Data

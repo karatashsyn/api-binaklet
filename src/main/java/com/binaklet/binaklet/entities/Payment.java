@@ -9,7 +9,6 @@ import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.time.OffsetDateTime;
 import java.util.Date;
 
 @Entity

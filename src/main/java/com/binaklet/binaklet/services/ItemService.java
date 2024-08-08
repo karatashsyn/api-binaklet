@@ -38,17 +38,20 @@ public class ItemService{
 
 
     public ResponseEntity<List<BasicItemDTO>> getAll(SearchItemRequest request){
-
-        //TODO replace "" with item.getImages().get(0).getUrl()
+        //TODO: replace "" with item.getImages().get(0).getUrl()
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
         List<Item> allItems= itemRepository.findAll(itemSpec.applyFilters(request.getSearchKey(), request.getMaxPrice(),request.getMinPrice(),request.getByUserId(),request.getStatus(), request.getCategoryId()));
-        List <BasicItemDTO> allItemsDTOs =allItems.stream().map(item->BasicItemDTO.build(item.getId(),item.getStatus(),item.getBrand(),item.getName(),item.getPrice(),"")).toList();
+        // List <BasicItemDTO> allItemsDTOs =allItems.stream().map(item->BasicItemDTO.build(item.getId(),item.getStatus(),item.getBrand(),item.getName(),item.getPrice(),"")).toList();
+        List<BasicItemDTO> allItemsDTOs = allItems.stream()
+            .filter(item -> !item.getUser().equals(currentUser.get()))
+            .map(item -> BasicItemDTO.build(item.getId(), item.getStatus(), item.getBrand(), item.getName(), item.getPrice(), item.getImages().get(0).getUrl()))
+            .collect(Collectors.toList());
 
         return ResponseEntity.ok(allItemsDTOs);
     }
 
-    //TODO replace "" with item.getImages().get(0).getUrl()
+    //TODO: replace "" with item.getImages().get(0).getUrl()
     public ResponseEntity<List<BasicItemDTO>> getMyItems(MyItemsRequest request){
 
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
@@ -97,10 +100,10 @@ public class ItemService{
         itemToCreate.setHeight(height);
         itemToCreate.setWidth(width);
 
-        //TODO Activate next line
+        //TODO: Activate next line
       //List<String> imageUrls = fileService.uploadFiles(images);
 
-        //TODO Deactivate next line
+        //TODO: Deactivate next line
         List<String> imageUrls =new ArrayList<>();
 
         List<Image> imagesToSave = new ArrayList<Image>();

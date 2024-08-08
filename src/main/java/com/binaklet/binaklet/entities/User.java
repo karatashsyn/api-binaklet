@@ -1,25 +1,18 @@
 package com.binaklet.binaklet.entities;
 
-import com.binaklet.binaklet.enums.ItemStatus;
 import com.binaklet.binaklet.enums.UserRole;
 import com.binaklet.binaklet.enums.UserStatus;
-import com.binaklet.binaklet.repositories.CartRepository;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nonnull;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
-import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
 import org.checkerframework.common.aliasing.qual.Unique;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.annotation.CreatedDate;
-import jakarta.validation.*;
 import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
-import org.springframework.web.bind.annotation.CrossOrigin;
 
 import java.util.Collection;
 import java.util.Date;

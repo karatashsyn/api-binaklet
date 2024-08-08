@@ -1,12 +1,10 @@
 package com.binaklet.binaklet.services;
 
 import org.springframework.beans.BeanUtils;
-import org.springframework.beans.factory.annotation.Autowired;
+// import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.jpa.repository.JpaRepository;
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Service;
 
-import java.net.http.HttpResponse;
 import java.util.List;
 import java.util.Optional;
 
@@ -14,7 +12,7 @@ import java.util.Optional;
 public abstract class BaseService<T,IdType> {
     private final JpaRepository<T,IdType> repository;
 
-    @Autowired(required = false)
+    // @Autowired(required = false)
     public BaseService(JpaRepository<T,IdType> repository){
         this.repository=repository;
     }

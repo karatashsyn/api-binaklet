@@ -17,7 +17,6 @@ import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
 import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.dto.responses.auth.MeDTO;
 import lombok.RequiredArgsConstructor;
-import org.apache.coyote.Response;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.authentication.AuthenticationManager;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;

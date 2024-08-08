@@ -1,12 +1,8 @@
 package com.binaklet.binaklet.services;
 
-import com.google.auth.oauth2.GoogleCredentials;
 import com.google.cloud.storage.*;
 import com.google.common.collect.ImmutableList;
-import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
-import lombok.Value;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -19,7 +15,7 @@ import java.util.*;
 public class FileService {
 
 
-    private static String[] types = {".jpeg", ".png", ".heic", "jpg", "webp"};
+    // private static String[] types = {".jpeg", ".png", ".heic", "jpg", "webp"};
 
     private Storage storage;
     private static final String STORAGE_BASE_URL="https://storage.googleapis.com/binaklet-bucket-april/";

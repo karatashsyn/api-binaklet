@@ -2,7 +2,6 @@ package com.binaklet.binaklet.services;
 
 import com.binaklet.binaklet.dto.requests.cart.AddToCartRequest;
 import com.binaklet.binaklet.dto.requests.cart.RemoveItemFromCart;
-import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
 import com.binaklet.binaklet.dto.responses.cart.CartDto;
 import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.entities.Cart;
@@ -21,7 +20,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 @Service
 @RequiredArgsConstructor
@@ -108,8 +106,6 @@ public class CartService {
         List<Item> cartItems = currentUserCart.getItems();
         List<ItemDetailDTO> detailedCartItems = new ArrayList<>();
         for (Item item : cartItems) {
-            User ownerOfItem = item.getUser();
-            BasicUserDto itemUser = BasicUserDto.builder().id(ownerOfItem.getId()).email(ownerOfItem.getEmail()).name(ownerOfItem.getName()).addresses(ownerOfItem.getAddresses().stream().map(adrs -> adrs.getAddressText()).collect(Collectors.toList())).build();
             ItemDetailDTO itemDetail = ItemDetailDTO.builder().id(item.getId()).name(item.getName()).price(item.getPrice()).mass(item.getMass()).brand(item.getBrand()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getCategory()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()).build();
             detailedCartItems.add(itemDetail);
         }

@@ -1,7 +1,5 @@
 package com.binaklet.binaklet.dto.responses.address;
 
-import com.binaklet.binaklet.entities.Address;
-import com.binaklet.binaklet.enums.UserRole;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;

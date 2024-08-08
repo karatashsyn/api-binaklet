@@ -2,15 +2,12 @@ package com.binaklet.binaklet.entities;
 
 
 import com.binaklet.binaklet.enums.OrderStatus;
-import com.binaklet.binaklet.enums.UserRole;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonIgnore;
-import jakarta.annotation.Nullable;
 import jakarta.persistence.*;
 import lombok.Data;
 import org.springframework.data.annotation.CreatedDate;
 
-import java.time.OffsetDateTime;
 import java.util.Date;
 import java.util.List;
 

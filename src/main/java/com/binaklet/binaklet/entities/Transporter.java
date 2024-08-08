@@ -1,16 +1,11 @@
 package com.binaklet.binaklet.entities;
 
 
-import com.binaklet.binaklet.enums.PaymentMethod;
-import com.binaklet.binaklet.enums.PaymentStatus;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.Email;
 import jakarta.validation.constraints.NotNull;
 import lombok.Data;
-import org.springframework.data.annotation.CreatedDate;
 
-import java.time.OffsetDateTime;
-import java.util.Date;
 import java.util.List;
 
 @Entity
