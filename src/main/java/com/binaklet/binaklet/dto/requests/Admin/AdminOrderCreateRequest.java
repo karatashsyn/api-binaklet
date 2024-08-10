@@ -1,4 +1,4 @@
-package com.binaklet.binaklet.dto.requests.Admin;
+package com.binaklet.binaklet.dto.requests.admin;
 
 
 import lombok.Data;

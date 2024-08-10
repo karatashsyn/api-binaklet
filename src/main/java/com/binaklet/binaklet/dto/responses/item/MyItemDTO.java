@@ -15,7 +15,7 @@ import java.util.List;
 @AllArgsConstructor(staticName = "build")
 @Data
 @Builder
-public class ItemDetailDTO {
+public class MyItemDTO {
     Long id;
     String name;
     Float price;
@@ -27,8 +27,5 @@ public class ItemDetailDTO {
     ItemStatus status;
     String description;
     List<Image> images;
-    Category category;
-    BasicUserDto seller;
-    Boolean isFavourite;
-
+    Category type;
 }

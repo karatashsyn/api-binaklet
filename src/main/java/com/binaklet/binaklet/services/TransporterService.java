@@ -2,7 +2,7 @@ package com.binaklet.binaklet.services;
 
 import com.binaklet.binaklet.entities.Transporter;
 import com.binaklet.binaklet.repositories.TransporterRepository;
-import com.binaklet.binaklet.dto.requests.Admin.TransporterCreateRequest;
+import com.binaklet.binaklet.dto.requests.admin.TransporterCreateRequest;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;

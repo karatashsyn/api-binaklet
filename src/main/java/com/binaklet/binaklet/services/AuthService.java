@@ -3,6 +3,8 @@ package com.binaklet.binaklet.services;
 
 import com.binaklet.binaklet.dto.responses.cart.CartDto;
 import com.binaklet.binaklet.config.JwtService;
+import com.binaklet.binaklet.dto.responses.item.MyItemDTO;
+import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
 import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.entities.Item;
@@ -68,14 +70,29 @@ public class AuthService {
                 .toList();
 
         List<Item> userItems = currentUser.getItems();
-        List<ItemDetailDTO> itemDetailDTOs =  userItems.stream().map(item->
-            ItemDetailDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory())).toList();
+
+        List<MyItemDTO> itemDetailDTOs =  userItems.stream().map(item->
+                MyItemDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory())).toList();
 
         Cart userCart = currentUser.getCart();
-        CartDto userCartDto = CartDto.build(userCart.getId(),itemDetailDTOs);
+        List<Item> cartItems = userCart.getItems();
+
+//        List<ItemDetailDTO> cartItemDTOs = cartItems.stream().map(item->{
+//            User itemSeller = item.getUser();
+//            BasicUserDto itemSellerDTO = BasicUserDto.build(itemSeller.getId(),itemSeller.getEmail(), itemSeller.getName(),itemSeller.getAvatar(),
+//                    itemSeller.getRating(),itemSeller.getRateCount(),itemSeller.getAddresses().stream().map(Address::getAddressText).toList());
+//
+//            return ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(),
+//                    item.getWidth(), item.getHeight(), item.getDepth(),
+//                    item.getMass(), item.getBrand(), item.getStatus(),
+//                    item.getDescription(), item.getImages(), item.getCategory(), itemSellerDTO
+//            );
+//
+//
+//        }).toList();
 
         MeDTO response =  MeDTO.build(currentUser.getId(),currentUser.getRole(),
-                currentUser.getName(),currentUser.getEmail(),currentUser.getPhoneNumber(),addressDetailDTOs,userCartDto, itemDetailDTOs,currentUser.getCreatedDate());
+                currentUser.getName(),currentUser.getEmail(),currentUser.getPhoneNumber(),addressDetailDTOs,itemDetailDTOs,currentUser.getCreatedDate());
 
         return ResponseEntity.ok(response);
     }

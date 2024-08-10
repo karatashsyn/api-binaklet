@@ -12,8 +12,8 @@ import java.util.Date;
 import java.util.List;
 
 
-@NoArgsConstructor(staticName = "build")
-@AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor(staticName = "build")
 @Data
 @Builder
 public class UserDetailDTO {
@@ -25,6 +25,12 @@ public class UserDetailDTO {
     String name;
 
     String email;
+
+    String avatar;
+
+    Integer rateCount;
+
+    Float rating;
 
     AddressDetailDTO activeAddress;
 

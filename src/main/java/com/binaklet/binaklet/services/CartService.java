@@ -4,6 +4,8 @@ import com.binaklet.binaklet.dto.requests.cart.AddToCartRequest;
 import com.binaklet.binaklet.dto.requests.cart.RemoveItemFromCart;
 import com.binaklet.binaklet.dto.responses.cart.CartDto;
 import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
+import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
+import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.User;
@@ -16,10 +18,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.stereotype.Service;
 
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 
 @Service
 @RequiredArgsConstructor
@@ -58,7 +57,7 @@ public class CartService {
 
     }
 
-    public ResponseEntity<Cart> removeItemFromMyCart(RemoveItemFromCart request){
+    public ResponseEntity<CartDto> removeItemFromMyCart(RemoveItemFromCart request){
             Long itemId = request.getItemId();
             String email =  SecurityContextHolder.getContext().getAuthentication().getName();
             User currentUser = userRepo.findByEmail(email).orElse(null);
@@ -75,8 +74,8 @@ public class CartService {
             itemsOfCart.remove(itemToRemove.get());
 
             cartOfTheUser.setItems(itemsOfCart);
-            Cart updatedCart =cartRepo.save(cartOfTheUser);
-            return ResponseEntity.ok(updatedCart);
+            cartRepo.save(cartOfTheUser);
+            return this.getMyCart();
 
 
     }
@@ -102,16 +101,40 @@ public class CartService {
 
     public ResponseEntity<CartDto> getMyCart(){
         String email =  SecurityContextHolder.getContext().getAuthentication().getName();
-        Cart currentUserCart = userRepo.findByEmail(email).orElse(null).getCart();
+        Optional<User> currentUser = userRepo.findByEmail(email);
+        if(currentUser.isEmpty()) {throw new ApiRequestException("Yetkili kullanıcı bulunamadı.");}
+        Cart currentUserCart = currentUser.get().getCart();
+
         List<Item> cartItems = currentUserCart.getItems();
         List<ItemDetailDTO> detailedCartItems = new ArrayList<>();
-        for (Item item : cartItems) {
-            ItemDetailDTO itemDetail = ItemDetailDTO.builder().id(item.getId()).name(item.getName()).price(item.getPrice()).mass(item.getMass()).brand(item.getBrand()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getCategory()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()).build();
-            detailedCartItems.add(itemDetail);
-        }
-        CartDto userCart = CartDto.builder().id(currentUserCart.getId()).items(detailedCartItems).build();
 
-        return ResponseEntity.ok(userCart);
+        Map<Long, List<ItemDetailDTO>> userCart = new HashMap<>();
+
+        for (Item item : cartItems) {
+            User seller = item.getUser();
+            Long sellerId = seller.getId();
+
+            boolean isFavourite = currentUser.get().getFavourites().contains(item);
+
+            BasicUserDto sellerDTO = BasicUserDto.build(sellerId,seller.getEmail(),seller.getName(),seller.getAvatar(),seller.getRating(),seller.getRateCount(),seller.getAddresses().stream().map(Address::getAddressText).toList());
+            ItemDetailDTO itemDetailDTO = ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(), item.getHeight(), item.getWidth(), item.getDepth(), item.getMass(), item.getBrand(), item.getStatus(), item.getDescription(), item.getImages(), item.getCategory(),sellerDTO,isFavourite);
+
+            List<ItemDetailDTO> sellerItems = userCart.get(sellerId);
+
+//            if(sellerItems==null){
+//                List<ItemDetailDTO> freshSellerItems = new ArrayList<>();
+//                freshSellerItems.add(itemDetailDTO);
+//                userCart.put(sellerId,freshSellerItems);
+//            }
+//            else{
+//                sellerItems.add(itemDetailDTO);
+//            }
+            userCart.computeIfAbsent(sellerId, k -> new ArrayList<>()).add(itemDetailDTO);
+
+        }
+        CartDto cartResponse = CartDto.build(currentUserCart.getId(), userCart);
+
+        return ResponseEntity.ok(cartResponse);
 
     }
 }

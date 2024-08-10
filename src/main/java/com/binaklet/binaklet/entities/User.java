@@ -51,12 +51,19 @@ public class User implements UserDetails {
     @NotNull
     String phoneNumber;
 
+    String avatar;
+
+    Float rating;
+
+    Integer rateCount;
+
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
     List<Address> addresses;
 
     @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
     List<Item> items;
+
 
     @JsonIgnore
     @OneToMany(mappedBy = "buyer", fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
@@ -65,6 +72,13 @@ public class User implements UserDetails {
     @JsonIgnore
     @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER)
     List<Order> disposals;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "user_favourite",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name="item_id"))
+    List<Item> favourites;
 
 
     @JsonIgnore
@@ -83,6 +97,8 @@ public class User implements UserDetails {
     {
         status=UserStatus.ACTIVE;
         createdDate=new Date();
+        rateCount=0;
+        rating=Float.parseFloat("0.00");
     }
 
     @Override

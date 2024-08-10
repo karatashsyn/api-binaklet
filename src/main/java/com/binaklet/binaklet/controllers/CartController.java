@@ -24,7 +24,7 @@ public class CartController {
     }
 
     @PostMapping(value = {"/removeItemFromCart"})
-    ResponseEntity<Cart> removeItemFromCart(@Valid @RequestBody RemoveItemFromCart request){
+    ResponseEntity<CartDto> removeItemFromCart(@Valid @RequestBody RemoveItemFromCart request){
         return cartService.removeItemFromMyCart(request);
     }
 

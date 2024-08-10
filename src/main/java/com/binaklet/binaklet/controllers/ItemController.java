@@ -51,10 +51,8 @@ public class ItemController {
 
 
     @GetMapping({"/{itemId}"})
-
     public ResponseEntity<ItemDetailDTO> getItem(@PathVariable Long itemId){
             return itemService.getById(itemId);
-
     }
 
 
@@ -62,5 +60,4 @@ public class ItemController {
     public ResponseEntity<ItemDetailDTO> deleteItem(Long itemId){
         return itemService.delete(itemId);
     }
-
     }

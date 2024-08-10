@@ -42,10 +42,10 @@ public class ItemService{
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
         List<Item> allItems= itemRepository.findAll(itemSpec.applyFilters(request.getSearchKey(), request.getMaxPrice(),request.getMinPrice(),request.getByUserId(),request.getStatus(), request.getCategoryId()));
-        // List <BasicItemDTO> allItemsDTOs =allItems.stream().map(item->BasicItemDTO.build(item.getId(),item.getStatus(),item.getBrand(),item.getName(),item.getPrice(),"")).toList();
+        // TODO: Replace banner with item.getImages.get(0).getUrl()
         List<BasicItemDTO> allItemsDTOs = allItems.stream()
             .filter(item -> !item.getUser().equals(currentUser.get()))
-            .map(item -> BasicItemDTO.build(item.getId(), item.getStatus(), item.getBrand(), item.getName(), item.getPrice(), item.getImages().get(0).getUrl()))
+            .map(item -> BasicItemDTO.build(item.getId(), item.getStatus(), item.getBrand(), item.getName(), item.getPrice(), ""))
             .collect(Collectors.toList());
 
         return ResponseEntity.ok(allItemsDTOs);
@@ -129,15 +129,18 @@ public class ItemService{
         return ResponseEntity.ok(savedItem);
     }
     public ResponseEntity<ItemDetailDTO> getById(Long id){
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
+
         Optional<Item> foundItem = itemRepository.findById(id);
         if(foundItem.isEmpty()){throw new ApiRequestException("Ürün bulunamadı.");}
         Item item = foundItem.get();
         User owner = item.getUser();
-        BasicUserDto ownerDto = BasicUserDto.builder().email(owner.getEmail()).addresses(owner.getAddresses().stream().map(address -> address.getAddressText()).collect((Collectors.toList()))).name(owner.getName()).id(owner.getId()).build();
+        BasicUserDto ownerDto = BasicUserDto.build(owner.getId(),owner.getEmail(),owner.getName(),owner.getAvatar(),owner.getRating(),owner.getRateCount(),owner.getAddresses().stream().map(Address:: getAddressText).toList());
 
-        ItemDetailDTO itemDetail =  ItemDetailDTO.builder().name(item.getName()).id(item.getId()).mass(item.getMass()).brand(item.getBrand()
-        ).price(item.getPrice()).status(item.getStatus()).description(item.getDescription()).images(item.getImages()).type(item.getCategory()).height(item.getHeight()).width(item.getWidth()).depth(item.getDepth()
-        ).build();
+        boolean isUserFavourite = currentUser.get().getFavourites().contains(item);
+        ItemDetailDTO itemDetail = ItemDetailDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory(),ownerDto,isUserFavourite);
 
         return ResponseEntity.ok(itemDetail);
 
@@ -166,4 +169,6 @@ public class ItemService{
 
         return ResponseEntity.ok(null);
     }
+
+
 }

@@ -43,7 +43,6 @@ public class AddressService{
     public ResponseEntity<List<Address>> getCurrentUserAddresses() {
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         List<Address> foundAddresses = addressRepository.findByUser(currentUser.get());
-        if(foundAddresses.isEmpty()){throw new ApiRequestException("Address bulunamadı.");}
         return ResponseEntity.ok(foundAddresses);
     }
 }
