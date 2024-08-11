@@ -1,6 +1,7 @@
 package com.binaklet.binaklet.entities;
 
 
+import com.binaklet.binaklet.enums.AddressStatus;
 import com.fasterxml.jackson.annotation.JsonIgnore;
 import jakarta.validation.constraints.NotNull;
 import lombok.*;
@@ -30,6 +31,8 @@ public class Address {
 
 
     Boolean isUserDefault = false;
+
+    AddressStatus status = AddressStatus.PRESENT;
 
 
     @ManyToOne(fetch = FetchType.EAGER)

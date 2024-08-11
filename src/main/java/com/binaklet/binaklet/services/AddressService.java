@@ -2,6 +2,7 @@ package com.binaklet.binaklet.services;
 
 import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.User;
+import com.binaklet.binaklet.enums.AddressStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.AddressRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
@@ -71,20 +72,21 @@ public class AddressService{
 
     public ResponseEntity<List<Address>> getCurrentUserAddresses() {
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-        List<Address> foundAddresses = addressRepository.findByUser(currentUser.get());
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı.");}
+        List<Address> foundAddresses = addressRepository.findByUser(currentUser.get()).stream().filter(address -> address.getStatus()!=AddressStatus.DELETED).toList();
         return ResponseEntity.ok(foundAddresses);
     }
 
     public ResponseEntity<List<Address>> deleteAddress(Long addressId) {
         Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı.");}
         List<Address> foundAddresses = addressRepository.findByUser(currentUser.get());
         if(foundAddresses.stream().map(Address::getId).toList().contains(addressId)){
             Optional<Address> targetAddress = addressRepository.findById(addressId);
             if(targetAddress.isEmpty()){throw new ApiRequestException("Adres bulunamadı");}
-            foundAddresses.remove(targetAddress.get());
-            currentUser.get().setAddresses(foundAddresses);
-            userRepository.save(currentUser.get());
-            return ResponseEntity.ok(foundAddresses);
+            targetAddress.get().setStatus(AddressStatus.DELETED);
+            addressRepository.save(targetAddress.get());
+            return ResponseEntity.ok(addressRepository.findByUser(currentUser.get()));
         }
         else{
             throw new ApiRequestException("Bu id ile size ait bir adres bulunamadı.");
