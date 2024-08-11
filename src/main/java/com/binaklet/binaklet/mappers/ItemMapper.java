@@ -11,6 +11,7 @@ public class ItemMapper {
 
     BasicItemDTO basicItemDTO = new BasicItemDTO();
     basicItemDTO.setId(item.getId());
+    basicItemDTO.setName(item.getName());
     basicItemDTO.setStatus(item.getStatus());
     basicItemDTO.setBrand(item.getBrand());
     basicItemDTO.setPrice(item.getPrice());

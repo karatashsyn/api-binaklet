@@ -27,8 +27,18 @@ public class AddressController {
     }
 
     @PostMapping()
-    public ResponseEntity<Address> createAddress(@RequestBody @Valid CreateAddressRequest request){
+    public ResponseEntity<Address> addAddress(@RequestBody @Valid CreateAddressRequest request){
         return addressService.create(request);
+    }
+
+    @DeleteMapping("/{addressId}")
+    public ResponseEntity<List<Address>> deleteAddress(@PathVariable(name = "addressId") Long addressId){
+        return addressService.deleteAddress(addressId);
+    }
+
+    @PostMapping("/{addressId}/makeDefault")
+    public ResponseEntity<Address> makeDefault(@PathVariable(name = "addressId") Long addressId){
+        return addressService.makeAddressDefault(addressId);
     }
 
     @GetMapping({"/{addressId}"})

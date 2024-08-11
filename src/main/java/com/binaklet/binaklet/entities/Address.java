@@ -29,7 +29,7 @@ public class Address {
     String contactPhone;
 
 
-    Boolean isUserDefault;
+    Boolean isUserDefault = false;
 
 
     @ManyToOne(fetch = FetchType.EAGER)
