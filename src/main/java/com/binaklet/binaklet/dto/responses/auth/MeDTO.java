@@ -2,6 +2,7 @@ package com.binaklet.binaklet.dto.responses.auth;
 
 import com.binaklet.binaklet.dto.responses.cart.CartDto;
 import com.binaklet.binaklet.dto.responses.item.MyItemDTO;
+import com.binaklet.binaklet.entities.Profile;
 import com.binaklet.binaklet.enums.UserRole;
 import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
 import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
@@ -22,7 +23,7 @@ public class MeDTO {
 
     UserRole role;
 
-    String name;
+    Profile profile;
 
     String email;
 

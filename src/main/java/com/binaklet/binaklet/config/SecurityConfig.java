@@ -27,7 +27,8 @@ public class SecurityConfig {
                 .disable()
                 .authorizeHttpRequests()
                 .requestMatchers(HttpMethod.GET,"/api/items/**","/api/users/**", "/api/transporters/").permitAll()
-                .requestMatchers(HttpMethod.POST,"/api/auth/**").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/auth/login").permitAll()
+                .requestMatchers(HttpMethod.POST,"/api/auth/register").permitAll()
 
                 //TODO:ADMIN FILTRESI CALISMIYOR, bunu sil
                 //TODO:ADMIN FILTRESI CALISMIYOR, bunu sil

@@ -1,5 +1,6 @@
 package com.binaklet.binaklet.entities;
 
+import com.binaklet.binaklet.EntityListeners.UserEntityListener;
 import com.binaklet.binaklet.enums.UserRole;
 import com.binaklet.binaklet.enums.UserStatus;
 import com.fasterxml.jackson.annotation.JsonFormat;
@@ -21,11 +22,13 @@ import java.util.List;
 @Data
 @Table(name = "user")
 @Entity
-@NoArgsConstructor
+@EntityListeners(UserEntityListener.class)
 @AllArgsConstructor(staticName = "build")
 @Builder
+@RequiredArgsConstructor
 
 public class User implements UserDetails {
+
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -35,8 +38,6 @@ public class User implements UserDetails {
     @Enumerated(EnumType.STRING)
     private UserRole role;
 
-    @NotNull
-    String name;
 
     @Email
     @NotNull
@@ -51,7 +52,6 @@ public class User implements UserDetails {
     @NotNull
     String phoneNumber;
 
-    String avatar;
 
     Float rating;
 
@@ -85,6 +85,11 @@ public class User implements UserDetails {
     @OneToOne
     @JoinColumn(name = "cart_id")
     Cart cart;
+
+    @JsonIgnore
+    @OneToOne
+    @JoinColumn(name = "profile_id")
+    Profile profile;
 
     UserStatus status;
 

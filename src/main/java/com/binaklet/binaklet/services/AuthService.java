@@ -5,12 +5,11 @@ import com.binaklet.binaklet.dto.responses.cart.CartDto;
 import com.binaklet.binaklet.config.JwtService;
 import com.binaklet.binaklet.dto.responses.item.MyItemDTO;
 import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
-import com.binaklet.binaklet.entities.Address;
-import com.binaklet.binaklet.entities.Cart;
-import com.binaklet.binaklet.entities.Item;
-import com.binaklet.binaklet.entities.User;
+import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.UserRole;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
+import com.binaklet.binaklet.mappers.UserMapper;
+import com.binaklet.binaklet.repositories.ProfileRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
 import com.binaklet.binaklet.dto.requests.auth.LoginRequest;
 import com.binaklet.binaklet.dto.requests.auth.RegisterRequest;
@@ -39,6 +38,8 @@ public class AuthService {
     private final JwtService jwtService;
     private final UserService userService;
     private final AuthenticationManager authenticationManager;
+    private final ProfileRepository profileRepository;
+
 
     public ResponseEntity<AuthenticationResponse> register(RegisterRequest request) {
         Optional<User> checkedUser = userRepository.findByEmail(request.getEmail());
@@ -46,16 +47,23 @@ public class AuthService {
             throw new ApiRequestException("Bu email kullanılmakta.");
         }
         else{
+            Profile userProfile = new Profile();
+            userProfile.setName(request.getName());
+            Profile newProfile = profileRepository.save(userProfile);
             var user = User.builder()
-                    .name(request.getName())
                     .email(request.getEmail())
                     .password(passwordEncoder.encode(request.getPassword())).role(UserRole.USER)
                     .phoneNumber(request.getPhoneNumber())
+                    .profile(newProfile)
                     .build();
-            User createdUser = userService.createUserWithEmptyCard(user);
+
+            userRepository.save(user);
+
+
+
             var token = jwtService.generateToken(user);
             AuthenticationResponse response = AuthenticationResponse.builder()
-                    .token(token).user(createdUser)
+                    .token(token).user(UserMapper.toMeDTO(user))
                     .build();
             return ResponseEntity.ok(response);
         }
@@ -64,37 +72,7 @@ public class AuthService {
 
     public ResponseEntity<MeDTO> getMe(){
         User currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).get();
-        List<Address> userAddresses = currentUser.getAddresses();
-        List<AddressDetailDTO> addressDetailDTOs = userAddresses.stream()
-                .map(address -> new AddressDetailDTO(address.getId(),address.getAddressText(), address.getIsUserDefault(),address.getAddressTitle(),address.getContactPhone()))
-                .toList();
-
-        List<Item> userItems = currentUser.getItems();
-
-        List<MyItemDTO> itemDetailDTOs =  userItems.stream().map(item->
-                MyItemDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory())).toList();
-
-        Cart userCart = currentUser.getCart();
-        List<Item> cartItems = userCart.getItems();
-
-//        List<ItemDetailDTO> cartItemDTOs = cartItems.stream().map(item->{
-//            User itemSeller = item.getUser();
-//            BasicUserDto itemSellerDTO = BasicUserDto.build(itemSeller.getId(),itemSeller.getEmail(), itemSeller.getName(),itemSeller.getAvatar(),
-//                    itemSeller.getRating(),itemSeller.getRateCount(),itemSeller.getAddresses().stream().map(Address::getAddressText).toList());
-//
-//            return ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(),
-//                    item.getWidth(), item.getHeight(), item.getDepth(),
-//                    item.getMass(), item.getBrand(), item.getStatus(),
-//                    item.getDescription(), item.getImages(), item.getCategory(), itemSellerDTO
-//            );
-//
-//
-//        }).toList();
-
-        MeDTO response =  MeDTO.build(currentUser.getId(),currentUser.getRole(),
-                currentUser.getName(),currentUser.getEmail(),currentUser.getPhoneNumber(),addressDetailDTOs,itemDetailDTOs,currentUser.getCreatedDate());
-
-        return ResponseEntity.ok(response);
+        return ResponseEntity.ok(UserMapper.toMeDTO(currentUser));
     }
 
     public ResponseEntity<AuthenticationResponse> login(LoginRequest request) {
@@ -102,7 +80,7 @@ public class AuthService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
             var foundUser = userRepository.findByEmail(request.getEmail()).orElseThrow();
             var token = jwtService.generateToken(foundUser);
-            AuthenticationResponse response =  AuthenticationResponse.builder().token(token).user(foundUser).build();
+            AuthenticationResponse response =  AuthenticationResponse.builder().token(token).user(UserMapper.toMeDTO(foundUser)).build();
             return ResponseEntity.ok(response);
         }
         catch (AuthenticationException e){

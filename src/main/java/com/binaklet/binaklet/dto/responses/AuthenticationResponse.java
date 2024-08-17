@@ -1,6 +1,7 @@
 package com.binaklet.binaklet.dto.responses;
 
 
+import com.binaklet.binaklet.dto.responses.auth.MeDTO;
 import com.binaklet.binaklet.entities.User;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -14,6 +15,6 @@ import lombok.NoArgsConstructor;
 public class AuthenticationResponse {
 
     private String token;
-    private User user;
+    private MeDTO user;
     private String message;
 }

@@ -68,7 +68,6 @@ public class Order {
 
 
 
-
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "seller_user_id")
     User seller;

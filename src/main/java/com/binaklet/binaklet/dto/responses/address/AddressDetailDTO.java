@@ -5,21 +5,19 @@ import lombok.Builder;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
-@NoArgsConstructor(staticName = "build")
-@AllArgsConstructor
+@NoArgsConstructor
+@AllArgsConstructor(staticName = "build")
 @Data
 @Builder
 public class AddressDetailDTO {
 
     Long id;
 
-
     String addressText;
 
     Boolean isUserDefault;
 
     String addressTitle;
-
 
     String contactPhone;
 

@@ -116,7 +116,7 @@ public class CartService {
 
             boolean isFavourite = currentUser.get().getFavourites().contains(item);
 
-            BasicUserDto sellerDTO = BasicUserDto.build(sellerId,seller.getEmail(),seller.getName(),seller.getAvatar(),seller.getRating(),seller.getRateCount(),seller.getAddresses().stream().map(Address::getAddressText).toList());
+            BasicUserDto sellerDTO = BasicUserDto.build(sellerId,seller.getEmail(),seller.getProfile().getName(),seller.getProfile().getAvatar(),seller.getRating(),seller.getRateCount(),seller.getAddresses().stream().map(Address::getAddressText).toList());
             ItemDetailDTO itemDetailDTO = ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(), item.getHeight(), item.getWidth(), item.getDepth(), item.getMass(), item.getBrand(), item.getStatus(), item.getDescription(), item.getImages(), item.getCategory(),sellerDTO,isFavourite);
 
             List<ItemDetailDTO> sellerItems = userCart.get(sellerId);

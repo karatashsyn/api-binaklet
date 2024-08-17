@@ -1,6 +1,5 @@
 package com.binaklet.binaklet.services;
 
-import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.enums.UserStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.repositories.UserRepository;
@@ -18,11 +17,6 @@ import java.util.Optional;
 public class UserService{
     private final UserRepository userRepo;
     private final CartService cartService;
-    public User createUserWithEmptyCard(User user) {
-        Cart newCart = cartService.createEmpty();
-        user.setCart(newCart);
-        return userRepo.save(user);
-    }
 
     public User getById(Long id){
         User foundUser  = userRepo.findById(id).orElse(null);
