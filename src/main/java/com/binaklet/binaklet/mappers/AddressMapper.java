@@ -3,6 +3,7 @@ package com.binaklet.binaklet.mappers;
 import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
 import com.binaklet.binaklet.entities.Address;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class AddressMapper {
@@ -20,6 +21,7 @@ public class AddressMapper {
 
 
     public static List<AddressDetailDTO> toAddressDetailDTOs(List<Address> addresses){
+        if(addresses==null || addresses.isEmpty()){return new ArrayList<>();}
         return addresses.stream().map(AddressMapper::toAddressDetailDTO).toList();
     }
 }

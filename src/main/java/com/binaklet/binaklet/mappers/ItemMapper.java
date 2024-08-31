@@ -4,12 +4,12 @@ import com.binaklet.binaklet.dto.responses.item.BasicItemDTO;
 import com.binaklet.binaklet.dto.responses.item.MyItemDTO;
 import com.binaklet.binaklet.entities.Item;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class ItemMapper {
 
     public static BasicItemDTO toBasicItemDTO(Item item){
-
     BasicItemDTO basicItemDTO = new BasicItemDTO();
     basicItemDTO.setId(item.getId());
     basicItemDTO.setName(item.getName());
@@ -44,10 +44,12 @@ public class ItemMapper {
     }
 
     public static List<BasicItemDTO> toBasicItemDTOList(List<Item> items){
+        if(items==null || items.isEmpty()){return new ArrayList<>();}
         return items.stream().map(ItemMapper::toBasicItemDTO).toList();
     }
 
     public static List<MyItemDTO> toMyItemsDTOList(List<Item> items){
+        if(items==null || items.isEmpty()){return new ArrayList<>();}
         return items.stream().map(ItemMapper::toMyItemDTO).toList();
     }
 

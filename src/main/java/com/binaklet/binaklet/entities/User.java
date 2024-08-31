@@ -15,6 +15,7 @@ import org.springframework.security.core.GrantedAuthority;
 import org.springframework.security.core.authority.SimpleGrantedAuthority;
 import org.springframework.security.core.userdetails.UserDetails;
 
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
@@ -58,20 +59,20 @@ public class User implements UserDetails {
     Integer rateCount;
 
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
-    List<Address> addresses;
+    List<Address> addresses = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "user",fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
-    List<Item> items;
+    List<Item> items = new ArrayList<>();
 
 
     @JsonIgnore
     @OneToMany(mappedBy = "buyer", fetch = FetchType.EAGER)//mapped by string is = manyToOne variable name
-    List<Order> orders;
+    List<Order> orders = new ArrayList<>();
 
     @JsonIgnore
     @OneToMany(mappedBy = "seller", fetch = FetchType.EAGER)
-    List<Order> disposals;
+    List<Order> disposals = new ArrayList<>();
 
     @JsonIgnore
     @ManyToMany(fetch = FetchType.LAZY)
@@ -79,6 +80,17 @@ public class User implements UserDetails {
             joinColumns = @JoinColumn(name = "user_id"),
             inverseJoinColumns = @JoinColumn(name="item_id"))
     List<Item> favourites;
+
+    @JsonIgnore
+    @ManyToMany(fetch = FetchType.LAZY)
+    @JoinTable(name = "followers",
+            joinColumns = @JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name="follower_id"))
+    List<User> followers;
+
+    @JsonIgnore
+    @ManyToMany(mappedBy = "followers")
+    List<User> followings;
 
 
     @JsonIgnore

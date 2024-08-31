@@ -32,14 +32,14 @@ public class ItemController {
 
 
     @GetMapping
-    public ResponseEntity<List<BasicItemDTO>> getItems(@ModelAttribute SearchItemRequest request)
+    public ResponseEntity<List<BasicItemDTO>> getItems(@Valid @ModelAttribute SearchItemRequest request)
     {
         return itemService.getAll(request);
     }
 
 
     @GetMapping("/me")
-    public ResponseEntity<List<BasicItemDTO>> getMyItems(@ModelAttribute MyItemsRequest request )
+    public ResponseEntity<List<BasicItemDTO>> getMyItems(@Valid @ModelAttribute MyItemsRequest request )
     {
         return itemService.getMyItems(request);
     }
