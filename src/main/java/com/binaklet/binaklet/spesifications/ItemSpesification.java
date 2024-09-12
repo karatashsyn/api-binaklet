@@ -4,6 +4,7 @@ import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.Category;
 import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.enums.ItemStatus;
+import com.binaklet.binaklet.repositories.UserRepository;
 import com.binaklet.binaklet.services.CategoryService;
 import com.binaklet.binaklet.services.UserService;
 import lombok.RequiredArgsConstructor;
@@ -16,6 +17,7 @@ public class ItemSpesification {
 
     private final CategoryService categoryService;
     private final UserService userService;
+    private final UserRepository userRepository;
     public Specification<Item> status(ItemStatus status){
         return (root,query,cb)->
                 cb.equal(root.get("status"),status);
@@ -47,7 +49,7 @@ public class ItemSpesification {
     }
 
     public Specification<Item> byUser(Long id){
-        User filterUser = userService.getById(id);
+        User filterUser = userRepository.getById(id);
         return (root, query, cb) ->cb.equal(root.get("user"),filterUser);
     }
 

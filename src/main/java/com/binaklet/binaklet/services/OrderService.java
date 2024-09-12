@@ -55,7 +55,7 @@ public class OrderService{
             }
             orderItems.add(foundItem);
         }
-        User seller = userService.getById(request.getSellerId());
+        User seller = userRepository.getById(request.getSellerId());
         if(orderItems.isEmpty()){throw new ApiRequestException("Sipariş en az bir ürün içermeli");}
         if(seller==null){throw new ApiRequestException("Satıcı bulunamadı");}
         Order orderToCreate = new Order();

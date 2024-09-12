@@ -88,6 +88,7 @@ public class User implements UserDetails {
             inverseJoinColumns = @JoinColumn(name="follower_id"))
     List<User> followers;
 
+
     @JsonIgnore
     @ManyToMany(mappedBy = "followers")
     List<User> followings;

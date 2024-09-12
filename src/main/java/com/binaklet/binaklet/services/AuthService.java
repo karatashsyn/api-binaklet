@@ -1,10 +1,7 @@
 package com.binaklet.binaklet.services;
 
 
-import com.binaklet.binaklet.dto.responses.cart.CartDto;
 import com.binaklet.binaklet.config.JwtService;
-import com.binaklet.binaklet.dto.responses.item.MyItemDTO;
-import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
 import com.binaklet.binaklet.entities.*;
 import com.binaklet.binaklet.enums.UserRole;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
@@ -14,8 +11,6 @@ import com.binaklet.binaklet.repositories.UserRepository;
 import com.binaklet.binaklet.dto.requests.auth.LoginRequest;
 import com.binaklet.binaklet.dto.requests.auth.RegisterRequest;
 import com.binaklet.binaklet.dto.responses.AuthenticationResponse;
-import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
-import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.dto.responses.auth.MeDTO;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
@@ -36,7 +31,6 @@ public class AuthService {
     private final UserRepository userRepository;
     private final PasswordEncoder passwordEncoder;
     private final JwtService jwtService;
-    private final UserService userService;
     private final AuthenticationManager authenticationManager;
     private final ProfileRepository profileRepository;
 
@@ -68,6 +62,14 @@ public class AuthService {
             return ResponseEntity.ok(response);
         }
 
+    }
+
+    public User getAuthenticatedUser(){
+        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
+        if (currentUser.isEmpty()){
+            throw new ApiRequestException("Yetkili Kullanıcı Bulunamadı.");
+        }
+        return currentUser.get();
     }
 
     public ResponseEntity<MeDTO> getMe(){

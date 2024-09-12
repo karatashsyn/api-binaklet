@@ -40,6 +40,8 @@ public class UserDetailDTO {
 
     Date createdDate;
 
+    Boolean isFollowed;
 
+    Integer followers;
 
 }

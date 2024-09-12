@@ -24,10 +24,6 @@ public class JwtService {
     }
 
     public String generateToken (UserDetails userDetails){
-        System.out.println("Trying to generate token");
-        System.out.println(userDetails.toString());
-
-
         String generatedToken =  generateToken(new HashMap<>(),userDetails);
         System.out.println(generatedToken);
     return generatedToken;

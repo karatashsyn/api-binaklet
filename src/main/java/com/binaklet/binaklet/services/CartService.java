@@ -10,6 +10,7 @@ import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
+import com.binaklet.binaklet.mappers.UserMapper;
 import com.binaklet.binaklet.repositories.CartRepository;
 import com.binaklet.binaklet.repositories.ItemRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
@@ -26,6 +27,8 @@ public class CartService {
     private final UserRepository userRepo;
     private final CartRepository cartRepo;
     private final ItemRepository itemRepo;
+    private final AuthService authService;
+
     public Cart createEmpty(){
         Cart cart = new Cart();
         List<Item> emptyItems = new ArrayList<>();
@@ -116,7 +119,7 @@ public class CartService {
 
             boolean isFavourite = currentUser.get().getFavourites().contains(item);
 
-            BasicUserDto sellerDTO = BasicUserDto.build(sellerId,seller.getEmail(),seller.getProfile().getName(),seller.getProfile().getAvatar(),seller.getRating(),seller.getRateCount(),seller.getAddresses().stream().map(Address::getAddressText).toList());
+            BasicUserDto sellerDTO = UserMapper.toBasicUserDTO(seller,authService);
             ItemDetailDTO itemDetailDTO = ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(), item.getHeight(), item.getWidth(), item.getDepth(), item.getMass(), item.getBrand(), item.getStatus(), item.getDescription(), item.getImages(), item.getCategory(),sellerDTO,isFavourite);
 
             List<ItemDetailDTO> sellerItems = userCart.get(sellerId);

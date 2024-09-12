@@ -1,7 +1,10 @@
 package com.binaklet.binaklet.services;
 
+import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
+import com.binaklet.binaklet.dto.responses.user.UserDetailDTO;
 import com.binaklet.binaklet.enums.UserStatus;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
+import com.binaklet.binaklet.mappers.UserMapper;
 import com.binaklet.binaklet.repositories.UserRepository;
 import com.binaklet.binaklet.entities.User;
 import lombok.RequiredArgsConstructor;
@@ -16,14 +19,14 @@ import java.util.Optional;
 @RequiredArgsConstructor
 public class UserService{
     private final UserRepository userRepo;
-    private final CartService cartService;
+    private final AuthService authService;
 
-    public User getById(Long id){
+    public ResponseEntity<UserDetailDTO> getUserDetail(Long id){
         User foundUser  = userRepo.findById(id).orElse(null);
         if(foundUser==null || foundUser.getStatus() == UserStatus.DELETED) throw new ApiRequestException("Kullanıcı Bulunamadı");
-
-        return foundUser;
+        return ResponseEntity.ok(UserMapper.toUserDetailDTO(foundUser, authService));
     }
+
 
     public ResponseEntity<List<User>> getAll()
     {
@@ -34,5 +37,32 @@ public class UserService{
         Optional<User> currentUser = userRepo.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
         if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
         return ResponseEntity.ok(currentUser.get());
+    }
+
+    public ResponseEntity<BasicUserDto> followUser(Long userId){
+        User currentUser =authService.getAuthenticatedUser();
+        Optional<User> targetUser = userRepo.findById(userId);
+        if(targetUser.isEmpty()){
+            throw new ApiRequestException("Kullanıcı bulunamadı.");
+        }
+        currentUser.getFollowings().add(targetUser.get());
+        targetUser.get().getFollowers().add(currentUser);
+        userRepo.save(currentUser);
+        userRepo.save(targetUser.get());
+        return ResponseEntity.ok(UserMapper.toBasicUserDTO(targetUser.get(), authService));
+    }
+
+    public ResponseEntity<BasicUserDto> unfollowUser(Long userId){
+        User currentUser =authService.getAuthenticatedUser();
+        Optional<User> targetUser = userRepo.findById(userId);
+
+        if(targetUser.isEmpty()){
+            throw new ApiRequestException("Kullanıcı bulunamadı.");
+        }
+
+        currentUser.getFollowings().remove(targetUser.get());
+        targetUser.get().getFollowers().remove(currentUser);
+        userRepo.save(currentUser);
+        return ResponseEntity.ok(UserMapper.toBasicUserDTO(targetUser.get(), authService));
     }
 }

@@ -11,10 +11,20 @@ import java.util.List;
 @AllArgsConstructor(staticName = "build")
 public class BasicUserDto {
     Long id;
+
     String email;
+
     String name;
+
     String avatar;
+
     Float rating;
+
     Integer rateCount;
+
     List<String> addresses;
+
+    Boolean isFollowed;
+
+    Integer followers;
 }
