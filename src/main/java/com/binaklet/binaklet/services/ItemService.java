@@ -7,6 +7,7 @@ import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.dto.requests.item.CreateItemRequest;
 import com.binaklet.binaklet.mappers.UserMapper;
+import com.binaklet.binaklet.util.ItemUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
 import com.binaklet.binaklet.entities.*;
@@ -131,17 +132,15 @@ public class ItemService{
         return ResponseEntity.ok(savedItem);
     }
     public ResponseEntity<ItemDetailDTO> getById(Long id){
-        Optional<User> currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName());
-
-        if(currentUser.isEmpty()){throw new ApiRequestException("Yetkili kullanıcı bulunamadı");}
+        User currentUser = authService.getAuthenticatedUser();
 
         Optional<Item> foundItem = itemRepository.findById(id);
         if(foundItem.isEmpty()){throw new ApiRequestException("Ürün bulunamadı.");}
         Item item = foundItem.get();
         User owner = item.getUser();
-        BasicUserDto ownerDto = UserMapper.toBasicUserDTO(owner,authService);
+        BasicUserDto ownerDto = UserMapper.toBasicUserDTO(owner, currentUser);
 
-        boolean isUserFavourite = currentUser.get().getFavourites().contains(item);
+        boolean isUserFavourite = ItemUtil.IsFavourite(currentUser,item);
         ItemDetailDTO itemDetail = ItemDetailDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory(),ownerDto,isUserFavourite);
 
         return ResponseEntity.ok(itemDetail);

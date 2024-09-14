@@ -17,4 +17,7 @@ public class CartDto {
 
     // Seller id and his items
     Map<Long, List<ItemDetailDTO>> items;
+
+    Integer total_items;
+
 }

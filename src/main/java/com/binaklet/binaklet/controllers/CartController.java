@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.*;
 public class CartController {
     private final CartService cartService;
     @PostMapping(value = {"/addItemToMyCart"},consumes = MediaType.APPLICATION_JSON_VALUE)
-    ResponseEntity<Cart> addItemToMyCart( @Valid @RequestBody AddToCartRequest request){
+    ResponseEntity<CartDto> addItemToMyCart( @Valid @RequestBody AddToCartRequest request){
         return cartService.addItemsToMyCart(request);
     }
 
@@ -27,7 +27,6 @@ public class CartController {
     ResponseEntity<CartDto> removeItemFromCart(@Valid @RequestBody RemoveItemFromCart request){
         return cartService.removeItemFromMyCart(request);
     }
-
 
     @GetMapping({"/getMyCart"} )
     ResponseEntity<CartDto> getMyCart(){

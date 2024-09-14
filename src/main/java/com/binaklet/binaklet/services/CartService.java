@@ -10,6 +10,7 @@ import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
+import com.binaklet.binaklet.mappers.CartMapper;
 import com.binaklet.binaklet.mappers.UserMapper;
 import com.binaklet.binaklet.repositories.CartRepository;
 import com.binaklet.binaklet.repositories.ItemRepository;
@@ -35,10 +36,8 @@ public class CartService {
         cart.setItems(emptyItems);
         return cartRepo.save(cart);
     }
-    public ResponseEntity<Cart> addItemsToMyCart(AddToCartRequest request) {
-            String email =  SecurityContextHolder.getContext().getAuthentication().getName();
-            User currentUser = userRepo.findByEmail(email).orElse(null);
-            assert currentUser != null;
+    public ResponseEntity<CartDto> addItemsToMyCart(AddToCartRequest request) {
+            User currentUser = authService.getAuthenticatedUser();
             List<Long> itemIds = request.getItemIds();
             Cart cartOfTheUser = currentUser.getCart();
             List<Item> itemsOfCart = cartOfTheUser.getItems();
@@ -55,7 +54,7 @@ public class CartService {
             itemsOfCart.addAll(itemsToAdd);
             cartOfTheUser.setItems(itemsOfCart);
             Cart updatedCart = cartRepo.save(cartOfTheUser);
-            return ResponseEntity.ok(updatedCart);
+            return ResponseEntity.ok(CartMapper.toCartDTO(updatedCart, currentUser));
 
 
     }
@@ -84,7 +83,7 @@ public class CartService {
     }
 
 
-    public void clearUserCart(Long userId){
+    public ResponseEntity<CartDto> clearUserCart(Long userId){
         User user = userRepo.findById(userId).orElse(null);
         if(user==null){throw new ApiRequestException("Kullanıcı bulunamadı");}
         Cart cartOfTheUser = user.getCart();
@@ -97,47 +96,15 @@ public class CartService {
         Cart cart = user.getCart();
         cart.setItems(Collections.emptyList());
         cartRepo.save(cart);
+        return this.getMyCart();
     }
 
 
 
 
     public ResponseEntity<CartDto> getMyCart(){
-        String email =  SecurityContextHolder.getContext().getAuthentication().getName();
-        Optional<User> currentUser = userRepo.findByEmail(email);
-        if(currentUser.isEmpty()) {throw new ApiRequestException("Yetkili kullanıcı bulunamadı.");}
-        Cart currentUserCart = currentUser.get().getCart();
-
-        List<Item> cartItems = currentUserCart.getItems();
-        List<ItemDetailDTO> detailedCartItems = new ArrayList<>();
-
-        Map<Long, List<ItemDetailDTO>> userCart = new HashMap<>();
-
-        for (Item item : cartItems) {
-            User seller = item.getUser();
-            Long sellerId = seller.getId();
-
-            boolean isFavourite = currentUser.get().getFavourites().contains(item);
-
-            BasicUserDto sellerDTO = UserMapper.toBasicUserDTO(seller,authService);
-            ItemDetailDTO itemDetailDTO = ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(), item.getHeight(), item.getWidth(), item.getDepth(), item.getMass(), item.getBrand(), item.getStatus(), item.getDescription(), item.getImages(), item.getCategory(),sellerDTO,isFavourite);
-
-            List<ItemDetailDTO> sellerItems = userCart.get(sellerId);
-
-//            if(sellerItems==null){
-//                List<ItemDetailDTO> freshSellerItems = new ArrayList<>();
-//                freshSellerItems.add(itemDetailDTO);
-//                userCart.put(sellerId,freshSellerItems);
-//            }
-//            else{
-//                sellerItems.add(itemDetailDTO);
-//            }
-            userCart.computeIfAbsent(sellerId, k -> new ArrayList<>()).add(itemDetailDTO);
-
-        }
-        CartDto cartResponse = CartDto.build(currentUserCart.getId(), userCart);
-
-        return ResponseEntity.ok(cartResponse);
+        User currentUser = authService.getAuthenticatedUser();
+        return ResponseEntity.ok(CartMapper.toCartDTO(currentUser.getCart(), currentUser));
 
     }
 }
