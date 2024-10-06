@@ -23,7 +23,7 @@ public class CartMapper {
             userCart.computeIfAbsent(sellerId, k -> new ArrayList<>()).add(itemDetailDTO);
         }
 
-        return CartDto.build(cart.getId(), userCart,cartItems.size());
+        return CartDto.build(cart.getId(), userCart, cartItems.size(), cartItems.stream().map(Item::getId).toList());
     }
 
 }
