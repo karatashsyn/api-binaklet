@@ -23,6 +23,9 @@ public class CreateItemRequest {
         @NotNull(message = "Kategori ID boş olamaz.")
         private Long categoryId;
 
+        @NotNull(message = "Adres boş olamaz.")
+        private Long pickUpAddressId;
+
         @NotNull(message = "Yükseklik boş olamaz.")
         private Float height;
 
