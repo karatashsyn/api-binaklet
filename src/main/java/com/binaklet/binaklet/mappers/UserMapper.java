@@ -12,6 +12,7 @@ import com.binaklet.binaklet.util.UserUtil;
 
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
 
 
 public class UserMapper {
@@ -34,8 +35,10 @@ public class UserMapper {
     }
 
     public static BasicUserDto toBasicUserDTO(User user, User currentUser){
-        List<String> userAddresses = user.getAddresses().stream().map(Address::getAddressText).toList();
+        Address activeUserAddress = user.getAddresses().stream().filter(Address::getIsUserDefault).toList().get(0);
+        AddressDetailDTO activeUserAddressDTO = AddressMapper.toAddressDetailDTO(activeUserAddress);
         Boolean isFollowed = UserUtil.IsFollowed(currentUser, currentUser);
-        return BasicUserDto.build(user.getId(), user.getEmail(), user.getProfile().getName(), user.getProfile().getAvatar(),user.getRating(),user.getRateCount(),userAddresses,isFollowed,user.getFollowers().size());
+
+        return BasicUserDto.build(user.getId(), user.getEmail(), user.getProfile().getName(), user.getProfile().getAvatar(),user.getRating(),user.getRateCount(),activeUserAddressDTO,isFollowed,user.getFollowers().size());
     }
 }

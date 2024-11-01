@@ -1,23 +1,32 @@
 package com.binaklet.binaklet.mappers;
 
+import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
 import com.binaklet.binaklet.dto.responses.item.BasicItemDTO;
 import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.dto.responses.item.MyItemDTO;
 import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
 import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.User;
+import com.binaklet.binaklet.repositories.AddressRepository;
 import com.binaklet.binaklet.util.ItemUtil;
+import lombok.RequiredArgsConstructor;
+import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 
+
+@RequiredArgsConstructor
+@Component
 public class ItemMapper {
 
-    public static ItemDetailDTO toItemDetailDTO(Item item, User currentUser){
-        boolean isFavourite = ItemUtil.IsFavourite(currentUser, item);
+    private final AddressRepository addressRepository;
 
+    public ItemDetailDTO toItemDetailDTO(Item item, User currentUser){
+        boolean isFavourite = ItemUtil.IsFavourite(currentUser, item);
         BasicUserDto seller = UserMapper.toBasicUserDTO(item.getUser(), currentUser);
-        return ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(), item.getHeight(), item.getWidth(), item.getDepth(), item.getMass(), item.getBrand(), item.getStatus(), item.getDescription(), item.getImages(), item.getCategory(),seller,isFavourite);
+        AddressDetailDTO itemAddressDTO = AddressMapper.toAddressDetailDTO( addressRepository.findById(item.getPickupAddressId()).get());
+        return ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(), item.getHeight(), item.getWidth(), item.getDepth(), item.getMass(), item.getBrand(), item.getStatus(), item.getDescription(), item.getImages(), item.getCategory(),seller,isFavourite,itemAddressDTO);
 
     }
 

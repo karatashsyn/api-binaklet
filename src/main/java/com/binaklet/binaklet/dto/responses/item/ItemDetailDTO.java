@@ -1,5 +1,6 @@
 package com.binaklet.binaklet.dto.responses.item;
 
+import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
 import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
 import com.binaklet.binaklet.entities.Image;
 import com.binaklet.binaklet.entities.Category;
@@ -30,5 +31,5 @@ public class ItemDetailDTO {
     Category category;
     BasicUserDto seller;
     Boolean isFavourite;
-
+    AddressDetailDTO address;
 }

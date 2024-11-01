@@ -1,12 +1,15 @@
 package com.binaklet.binaklet.services;
 import com.binaklet.binaklet.dto.requests.item.MyItemsRequest;
 import com.binaklet.binaklet.dto.requests.item.SearchItemRequest;
+import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
 import com.binaklet.binaklet.dto.responses.item.BasicItemDTO;
 import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
 import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.dto.requests.item.CreateItemRequest;
+import com.binaklet.binaklet.mappers.AddressMapper;
 import com.binaklet.binaklet.mappers.UserMapper;
+import com.binaklet.binaklet.repositories.AddressRepository;
 import com.binaklet.binaklet.util.ItemUtil;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Service;
@@ -37,6 +40,8 @@ public class ItemService{
     private final FileService fileService;
     private final CategoryService categoryService;
     private final AuthService authService;
+    private final AddressService addressService;
+    private final AddressRepository addressRepository;
 
 
 
@@ -82,6 +87,7 @@ public class ItemService{
         Float height = payload.getHeight();
         Float depth = payload.getDepth();
         Float mass = payload.getMass();
+        Long pickUpAddressId = payload.getPickUpAddressId();
         MultipartFile[] images = payload.getImages();
         String brand = payload.getBrand();
 
@@ -89,6 +95,12 @@ public class ItemService{
         Category category = categoryService.getById(categoryId);
         if( category==null){
             throw new ApiRequestException("Böyle bir kategori bulunmamaktadir.");
+        }
+
+        // TODO: Address should exist.
+        Optional<Address> itemAddress =  addressRepository.findById(pickUpAddressId);
+        if( itemAddress.isEmpty()){
+            throw new ApiRequestException("Böyle bir address bulunmamaktadir.");
         }
 
 
@@ -102,6 +114,7 @@ public class ItemService{
         itemToCreate.setDepth(depth);
         itemToCreate.setHeight(height);
         itemToCreate.setWidth(width);
+        itemToCreate.setPickupAddressId(pickUpAddressId);
 
         //TODO: Activate next line
       //List<String> imageUrls = fileService.uploadFiles(images);
@@ -141,7 +154,9 @@ public class ItemService{
         BasicUserDto ownerDto = UserMapper.toBasicUserDTO(owner, currentUser);
 
         boolean isUserFavourite = ItemUtil.IsFavourite(currentUser,item);
-        ItemDetailDTO itemDetail = ItemDetailDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory(),ownerDto,isUserFavourite);
+        Address itemAddress = addressRepository.findById( item.getPickupAddressId()).get();
+        AddressDetailDTO itemAddressDTO = AddressMapper.toAddressDetailDTO(itemAddress);
+        ItemDetailDTO itemDetail = ItemDetailDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory(),ownerDto,isUserFavourite,itemAddressDTO);
 
         return ResponseEntity.ok(itemDetail);
 

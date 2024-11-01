@@ -21,6 +21,9 @@ public class Item {
     Long id;
 
 
+    Long pickupAddressId;
+
+
     @NotBlank
     String name;
 

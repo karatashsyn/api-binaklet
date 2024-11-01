@@ -1,5 +1,6 @@
 package com.binaklet.binaklet.dto.responses.user;
 
+import com.binaklet.binaklet.dto.responses.address.AddressDetailDTO;
 import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Data;
@@ -22,7 +23,7 @@ public class BasicUserDto {
 
     Integer rateCount;
 
-    List<String> addresses;
+    AddressDetailDTO activeAddress;
 
     Boolean isFollowed;
 

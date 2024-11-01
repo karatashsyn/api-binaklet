@@ -3,15 +3,12 @@ package com.binaklet.binaklet.services;
 import com.binaklet.binaklet.dto.requests.cart.AddToCartRequest;
 import com.binaklet.binaklet.dto.requests.cart.RemoveItemFromCart;
 import com.binaklet.binaklet.dto.responses.cart.CartDto;
-import com.binaklet.binaklet.dto.responses.item.ItemDetailDTO;
-import com.binaklet.binaklet.dto.responses.user.BasicUserDto;
-import com.binaklet.binaklet.entities.Address;
 import com.binaklet.binaklet.entities.Cart;
 import com.binaklet.binaklet.entities.Item;
 import com.binaklet.binaklet.entities.User;
 import com.binaklet.binaklet.exceptions.ApiRequestException;
 import com.binaklet.binaklet.mappers.CartMapper;
-import com.binaklet.binaklet.mappers.UserMapper;
+import com.binaklet.binaklet.mappers.ItemMapper;
 import com.binaklet.binaklet.repositories.CartRepository;
 import com.binaklet.binaklet.repositories.ItemRepository;
 import com.binaklet.binaklet.repositories.UserRepository;
@@ -29,6 +26,7 @@ public class CartService {
     private final CartRepository cartRepo;
     private final ItemRepository itemRepo;
     private final AuthService authService;
+    private final CartMapper cartMapper;
 
     public Cart createEmpty(){
         Cart cart = new Cart();
@@ -54,7 +52,7 @@ public class CartService {
             itemsOfCart.addAll(itemsToAdd);
             cartOfTheUser.setItems(itemsOfCart);
             Cart updatedCart = cartRepo.save(cartOfTheUser);
-            return ResponseEntity.ok(CartMapper.toCartDTO(updatedCart, currentUser));
+            return ResponseEntity.ok(cartMapper.toCartDTO(updatedCart, currentUser));
 
 
     }
@@ -104,7 +102,7 @@ public class CartService {
 
     public ResponseEntity<CartDto> getMyCart(){
         User currentUser = authService.getAuthenticatedUser();
-        return ResponseEntity.ok(CartMapper.toCartDTO(currentUser.getCart(), currentUser));
+        return ResponseEntity.ok(cartMapper.toCartDTO(currentUser.getCart(), currentUser));
 
     }
 }
