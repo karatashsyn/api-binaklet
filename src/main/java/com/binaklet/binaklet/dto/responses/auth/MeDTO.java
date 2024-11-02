@@ -31,6 +31,8 @@ public class MeDTO {
 
     List<AddressDetailDTO> addresses;
 
+    AddressDetailDTO activeAddress;
+
     List<MyItemDTO>  items;
 
     Date createdDate;

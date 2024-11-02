@@ -12,14 +12,9 @@ public class CreateOrderRequest {
     @NotNull(message = "Çıkış adres id'si boş olamaz.")
     Long deliverAddressId;
 
-    @NotNull(message = "Alıcı id'si boş olamaz.")
-    Long buyerId;
-
     @NotNull(message = "Satıcı id'si boş olamaz.")
     Long sellerId;
 
     @NotEmpty(message = "Sipariş en az bir ürün içermeli.")
     Long[]itemIds;
-
-
 }

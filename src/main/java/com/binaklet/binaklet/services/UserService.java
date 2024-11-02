@@ -20,12 +20,13 @@ import java.util.Optional;
 public class UserService{
     private final UserRepository userRepo;
     private final AuthService authService;
+    private final UserMapper userMapper;
 
     public ResponseEntity<UserDetailDTO> getUserDetail(Long id){
         User currentUser = authService.getAuthenticatedUser();
         User foundUser  = userRepo.findById(id).orElse(null);
         if(foundUser==null || foundUser.getStatus() == UserStatus.DELETED) throw new ApiRequestException("Kullanıcı Bulunamadı");
-        return ResponseEntity.ok(UserMapper.toUserDetailDTO(foundUser, currentUser));
+        return ResponseEntity.ok(userMapper.toUserDetailDTO(foundUser, currentUser));
     }
 
 
@@ -50,7 +51,7 @@ public class UserService{
         targetUser.get().getFollowers().add(currentUser);
         userRepo.save(currentUser);
         userRepo.save(targetUser.get());
-        return ResponseEntity.ok(UserMapper.toBasicUserDTO(targetUser.get(), currentUser));
+        return ResponseEntity.ok(userMapper.toBasicUserDTO(targetUser.get(), currentUser));
     }
 
     public ResponseEntity<BasicUserDto> unfollowUser(Long userId){
@@ -64,6 +65,6 @@ public class UserService{
         currentUser.getFollowings().remove(targetUser.get());
         targetUser.get().getFollowers().remove(currentUser);
         userRepo.save(currentUser);
-        return ResponseEntity.ok(UserMapper.toBasicUserDTO(targetUser.get(), currentUser));
+        return ResponseEntity.ok(userMapper.toBasicUserDTO(targetUser.get(), currentUser));
     }
 }

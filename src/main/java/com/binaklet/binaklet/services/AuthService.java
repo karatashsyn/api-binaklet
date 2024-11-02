@@ -33,6 +33,7 @@ public class AuthService {
     private final JwtService jwtService;
     private final AuthenticationManager authenticationManager;
     private final ProfileRepository profileRepository;
+    private final UserMapper userMapper;
 
 
     public ResponseEntity<AuthenticationResponse> register(RegisterRequest request) {
@@ -57,7 +58,7 @@ public class AuthService {
 
             var token = jwtService.generateToken(user);
             AuthenticationResponse response = AuthenticationResponse.builder()
-                    .token(token).user(UserMapper.toMeDTO(user))
+                    .token(token).user(userMapper.toMeDTO(user))
                     .build();
             return ResponseEntity.ok(response);
         }
@@ -74,7 +75,7 @@ public class AuthService {
 
     public ResponseEntity<MeDTO> getMe(){
         User currentUser = userRepository.findByEmail(SecurityContextHolder.getContext().getAuthentication().getName()).get();
-        return ResponseEntity.ok(UserMapper.toMeDTO(currentUser));
+        return ResponseEntity.ok(userMapper.toMeDTO(currentUser));
     }
 
     public ResponseEntity<AuthenticationResponse> login(LoginRequest request) {
@@ -82,7 +83,7 @@ public class AuthService {
             authenticationManager.authenticate(new UsernamePasswordAuthenticationToken(request.getEmail(),request.getPassword()));
             var foundUser = userRepository.findByEmail(request.getEmail()).orElseThrow();
             var token = jwtService.generateToken(foundUser);
-            AuthenticationResponse response =  AuthenticationResponse.builder().token(token).user(UserMapper.toMeDTO(foundUser)).build();
+            AuthenticationResponse response =  AuthenticationResponse.builder().token(token).user(userMapper.toMeDTO(foundUser)).build();
             return ResponseEntity.ok(response);
         }
         catch (AuthenticationException e){

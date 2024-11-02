@@ -42,6 +42,8 @@ public class ItemService{
     private final AuthService authService;
     private final AddressService addressService;
     private final AddressRepository addressRepository;
+    private final UserMapper userMapper;
+    private final AddressMapper addressMapper;
 
 
 
@@ -151,11 +153,11 @@ public class ItemService{
         if(foundItem.isEmpty()){throw new ApiRequestException("Ürün bulunamadı.");}
         Item item = foundItem.get();
         User owner = item.getUser();
-        BasicUserDto ownerDto = UserMapper.toBasicUserDTO(owner, currentUser);
+        BasicUserDto ownerDto = userMapper.toBasicUserDTO(owner, currentUser);
 
         boolean isUserFavourite = ItemUtil.IsFavourite(currentUser,item);
         Address itemAddress = addressRepository.findById( item.getPickupAddressId()).get();
-        AddressDetailDTO itemAddressDTO = AddressMapper.toAddressDetailDTO(itemAddress);
+        AddressDetailDTO itemAddressDTO = addressMapper.toAddressDetailDTO(itemAddress);
         ItemDetailDTO itemDetail = ItemDetailDTO.build(item.getId(),item.getName(),item.getPrice(),item.getWidth(),item.getHeight(),item.getDepth(),item.getMass(),item.getBrand(),item.getStatus(),item.getDescription(),item.getImages(),item.getCategory(),ownerDto,isUserFavourite,itemAddressDTO);
 
         return ResponseEntity.ok(itemDetail);

@@ -21,11 +21,13 @@ import java.util.List;
 public class ItemMapper {
 
     private final AddressRepository addressRepository;
+    private final UserMapper userMapper;
+    private final AddressMapper addressMapper;
 
     public ItemDetailDTO toItemDetailDTO(Item item, User currentUser){
         boolean isFavourite = ItemUtil.IsFavourite(currentUser, item);
-        BasicUserDto seller = UserMapper.toBasicUserDTO(item.getUser(), currentUser);
-        AddressDetailDTO itemAddressDTO = AddressMapper.toAddressDetailDTO( addressRepository.findById(item.getPickupAddressId()).get());
+        BasicUserDto seller = userMapper.toBasicUserDTO(item.getUser(), currentUser);
+        AddressDetailDTO itemAddressDTO = addressMapper.toAddressDetailDTO(addressRepository.findById(item.getPickupAddressId()).get());
         return ItemDetailDTO.build(item.getId(), item.getName(), item.getPrice(), item.getHeight(), item.getWidth(), item.getDepth(), item.getMass(), item.getBrand(), item.getStatus(), item.getDescription(), item.getImages(), item.getCategory(),seller,isFavourite,itemAddressDTO);
 
     }
